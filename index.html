@@ -1,0 +1,3122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learnova: Master DSA Through Play</title>
+    <!-- Google Fonts links: Added Roboto and Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Changed body font to Roboto, and headings to Montserrat */
+        body {
+            font-family: 'Comic Sans MS', Comic Sans MS; /* Primary font for body text */
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Comic Sans MS', Comic Sans MS; /* Primary font for headings */
+        }
+        /* Basic animation for fade-in */
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .animate-scaleIn {
+            animation: scaleIn 0.3s ease-out forwards;
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .hidden {
+            display: none;
+        }
+        /* Loading spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #6d28d9; /* purple-700 */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Style for selected MCQ option */
+        .option-selected {
+            background-color: #bfdbfe; /* bg-blue-200 */
+            border-color: #2563eb; /* border-blue-600 */
+        }
+        /* Style for correct/incorrect feedback */
+        .option-correct {
+            background-color: #dcfce7; /* bg-green-220 */
+            border-color: #16a34a; /* border-green-600 */
+        }
+        .option-incorrect {
+            background-color: #fee2e2; /* bg-red-200 */
+            border-color: #dc2626; /* border-red-600 */
+        }
+
+        /* Styles for Concept Rocket Launch blocks (2D version) */
+        .crl-block-item {
+            padding: 1rem;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            margin-bottom: 0.75rem; /* mb-3 */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: grab;
+            transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .crl-block-item.dragging {
+            opacity: 0.5;
+            border-style: dashed;
+            background-color: #f0f0f0;
+        }
+        .crl-block-item.drag-over {
+            border-color: #9298cf; /* indigo-400 */
+            background-color: #e0e7ff; /* indigo-100 */
+        }
+        .crl-block-item .icon {
+            color: #96acce; /* text-blue-500 */
+            margin-right: 1rem; /* mr-4 */
+            font-size: 2rem; /* Adjust icon size */
+        }
+        .crl-block-item .text-content {
+            flex-grow: 1;
+            text-align: left;
+            color: #374151; /* text-gray-800 */
+            font-weight: 500; /* font-medium */
+        }
+        .crl-block-item.correct-order {
+            background-color: #dcfce7; /* bg-green-100 */
+            border-color: #22c55e; /* border-green-500 */
+        }
+        .crl-block-item.incorrect-order {
+            background-color: #fee2e2; /* bg-red-100 */
+            border-color: #ef4444; /* border-red-500 */
+        }
+        .crl-block-item.correct-order .icon {
+            color: #16a34a; /* text-green-600 */
+        }
+        .crl-block-item.incorrect-order .icon {
+            color: #dc2626; /* text-red-600 */
+        }
+
+        /* Styles for Rapid Recall Arena options (New block style) */
+        .rra-option-item {
+            padding: 1rem;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+        }
+        .rra-option-item:hover {
+            background-color: #f9fafb; /* bg-gray-50 */
+        }
+        .rra-option-item.selected {
+            background-color: #dbeafe; /* bg-blue-100 */
+            border-color: #3b82f6; /* border-blue-500 */
+        }
+        .rra-option-item.correct {
+            background-color: #dcfce7; /* bg-green-100 */
+            border-color: #22c55e; /* border-green-500 */
+        }
+        .rra-option-item.incorrect {
+            background-color: #fee2e2; /* bg-red-100 */
+            border-color: #ef4444; /* border-red-500 */
+        }
+        .rra-option-item .option-icon {
+            color: #3b82f6; /* text-blue-500 */
+            margin-right: 1rem; /* mr-4 */
+            font-size: 2rem; /* Adjust icon size */
+        }
+        .rra-option-item .option-text {
+            flex-grow: 1;
+            text-align: left;
+            color: #374151; /* text-gray-800 */
+            font-weight: 500; /* font-medium */
+        }
+        .rra-option-item .checkmark-icon {
+            width: 1.5rem; /* w-6 */
+            height: 1.5rem; /* h-6 */
+            margin-left: 1rem; /* ml-4 */
+            display: none; /* Hidden by default */
+        }
+        .rra-option-item.selected .checkmark-icon {
+            display: block; /* Show when selected */
+            color: #3b82f6; /* text-blue-500 */
+        }
+        .rra-option-item.correct .checkmark-icon {
+            color: #16a34a; /* text-green-600 */
+        }
+        .rra-option-item.incorrect .checkmark-icon {
+            color: #dc2626; /* text-red-600 */
+        }
+
+        /* Styles for Fix the Code game */
+        .code-block-container {
+            background-color: #1f2937; /* bg-gray-800 */
+            color: #bed3e8; /* text-white */
+            padding: 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); /* shadow-inner */
+            margin-bottom: 1.5rem; /* mb-6 */
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace; /* Monospace font for code */
+            text-align: left;
+            font-size: 0.9em;
+        }
+        .code-block-container code {
+            display: block;
+            white-space: pre-wrap; /* Preserve whitespace and wrap text */
+            word-break: break-all; /* Break long words */
+        }
+        .code-input-area {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            border-radius: 0.5rem; /* rounded-lg */
+            outline: none;
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+        .code-input-area:focus {
+            border-color: transparent;
+            box-shadow: 0 0 0 2px #a855f7; /* focus:ring-2 focus:ring-purple-500 */
+        }
+
+        /* Styles for Block Identifier (formerly Flowchart Reorder & Relabel) */
+        .flowchart-container {
+            display: flex; /* Use flexbox for horizontal layout */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: center;
+            align-items: center; /* Align items centrally vertically */
+            gap: 2rem; /* Increased gap for visual separation */
+            padding: 1rem;
+            background-color: #cad5ec; /* bg-gray-100 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); /* shadow-inner */
+            margin-bottom: 1.5rem; /* mb-6 */
+            min-height: 150px;
+        }
+        .flowchart-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically */
+            text-align: center;
+            position: relative;
+            flex-shrink: 0;
+            width: 150px; /* Fixed width for each item */
+            height: 100px; /* Fixed height for consistency */
+            background-color: #b7dfe7; /* bg-white */
+            border: 2px solid #d1d5db; /* border-2 border-gray-300 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            padding: 0.5rem; /* Padding inside the block */
+            font-weight: 600; /* Semi-bold text */
+            color: #374151; /* text-gray-800 */
+            font-size: 0.9rem; /* Slightly smaller font to fit */
+            overflow: hidden; /* Hide overflow text */
+            text-overflow: ellipsis; /* Add ellipsis for overflow */
+            transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            /* No cursor: grab; or drag-related styles as it's not draggable */
+        }
+        .flowchart-item .block-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            word-break: break-word; /* Allow long words to break */
+            white-space: normal; /* Allow text to wrap */
+        }
+        .flowchart-input {
+            width: 100%;
+            height: 100%; /* Make input fill the block */
+            padding: 0.25rem;
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            border-radius: 0.375rem; /* rounded-md */
+            font-size: 0.875rem; /* text-sm */
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            min-height: 24px; /* Ensure consistent height */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+        .flowchart-input:focus {
+            border-color: transparent;
+            box-shadow: 0 0 0 2px #a855f7; /* focus:ring-2 focus:ring-purple-500 */
+        }
+        .flowchart-item.correct-order {
+            background-color: #dcfce7; /* bg-green-100 */
+            border-color: #22c55e; /* border-green-500 */
+        }
+        .flowchart-item.incorrect-order {
+            background-color: #fee2e2; /* bg-red-100 */
+            border-color: #ef4444; /* border-red-500 */
+        }
+
+        .spinner-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: #6b7280; /* text-gray-500 */
+        }
+
+        /* Add simple arrow between blocks for visual flow */
+        .flowchart-container .flowchart-item + .flowchart-item {
+            margin-left: 2rem; /* Adjust this gap to match the desired arrow length */
+            position: relative;
+        }
+
+        .flowchart-container .flowchart-item + .flowchart-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem; /* Position to the left of the current item, adjusted for gap */
+            top: 50%;
+            width: 1.5rem; /* Length of the arrow line */
+            height: 2px;
+            background-color: #4B5563; /* Gray-700 */
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .flowchart-container .flowchart-item + .flowchart-item::after {
+            content: '';
+            position: absolute;
+            left: -1.5rem; /* Position at the start of the arrow line */
+            top: 50%;
+            width: 0;
+            height: 0;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 8px solid #4B5563; /* Arrowhead pointing right */
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+
+        /* Adjust for mobile/smaller screens */
+        @media (max-width: 768px) {
+            .flowchart-item {
+                width: 120px; /* Smaller item width on mobile */
+                height: 80px;
+                font-size: 0.8rem;
+            }
+            .flowchart-container .flowchart-item + .flowchart-item {
+                margin-left: 1.5rem;
+            }
+            .flowchart-container .flowchart-item + .flowchart-item::before {
+                left: -1rem;
+                width: 1rem;
+            }
+            .flowchart-container .flowchart-item + .flowchart-item::after {
+                left: -1rem;
+            }
+        }
+
+
+        .solution-input-area {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            border-radius: 0.5rem; /* rounded-lg */
+            outline: none;
+            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            font-family: 'Roboto', sans-serif; /* Updated font-family */
+            font-size: 0.9em;
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 60px; /* Minimum height */
+        }
+        .solution-input-area:focus {
+            border-color: transparent;
+            box-shadow: 0 0 0 2px #c9b6dc; /* focus:ring-2 focus:ring-purple-500 */
+        }
+
+        /* Spin and Solve Game specific styles */
+        #wheelCanvas {
+            border: 2px solid #b097d9; /* purple-700 */
+            border-radius: 50%;
+            background-color: #f3e8ff; /* purple-50 */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+        #spinBtn {
+            background-color: #8b5cf6; /* violet-500 */
+            color: rgb(185, 225, 241);
+            padding: 1rem 2.5rem;
+            border-radius: 9999px; /* full rounded */
+            font-size: 1.25rem;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            cursor: pointer;
+        }
+        #spinBtn:hover {
+            background-color: #c3acea; /* violet-600 */
+            transform: translateY(-2px);
+        }
+        #spinBtn:disabled {
+            background-color: #cfc5ea; /* violet-300 */
+            cursor: not-allowed;
+            transform: none;
+        }
+        .question-section {
+            background-color: #ecfdf5; /* green-50 */
+            border: 1px solid #a7f3d0; /* green-200 */
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+        .question-section.riddle {
+            background-color: #eff6ff; /* blue-50 */
+            border-color: #a1c5f2; /* blue-200 */
+        }
+        .mcq-option-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .mcq-option-item:hover {
+            background-color: #a8b5cf;
+        }
+        .mcq-option-item.selected {
+            background-color: #4d82c7;
+            border-color: #8eb1ea;
+        }
+        .mcq-option-item.correct {
+            background-color: #dcfce7;
+            border-color: #10b981;
+        }
+        .mcq-option-item.incorrect {
+            background-color: #fee2e2;
+            border-color: #ef4444;
+        }
+        .mcq-option-item input[type="radio"] {
+            margin-right: 0.75rem;
+        }
+        /* Boss Fight Card Styles */
+        #boss-fight-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+            filter: grayscale(100%);
+        }
+        #boss-fight-card .boss-icon {
+            display: none; /* Hidden by default */
+        }
+        #boss-fight-card.unlocked .boss-icon {
+            display: block; /* Show when unlocked */
+        }
+
+        /* Style for perfect score indicator */
+        .perfect-score-indicator {
+            color: #f59e0b; /* text-amber-500 */
+            font-weight: bold;
+            margin-left: 0.5rem;
+        }
+
+        /* Reward Coin Styles */
+        .reward-coin {
+            font-size: 3rem; /* Large emoji size */
+            margin-right: 0.5rem;
+        }
+
+        /* --- Emoji Background Styles --- */
+        #emoji-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Hide emojis that go out of bounds */
+            z-index: 0; /* Ensure it's behind the main app container */
+        }
+
+        .emoji-item {
+            position: absolute;
+            font-size: 2rem; /* Default size, will be randomized */
+            opacity: 0; /* Start hidden */
+            animation: zoom-animation linear infinite; /* Apply animation */
+            pointer-events: none; /* Ensure clicks pass through to elements below */
+            user-select: none; /* Prevent text selection */
+        }
+
+        @keyframes zoom-animation {
+            0% {
+                transform: translateY(100vh) scale(0.5); /* Start from bottom, smaller */
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.7; /* Fade in */
+            }
+            80% {
+                opacity: 0.7; /* Stay visible */
+            }
+            100% {
+                transform: translateY(-100vh) scale(1.5); /* Float to top, larger */
+                opacity: 0; /* Fade out */
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-800 to-blue-400 flex items-center justify-center p-4 relative">
+    <!-- Emoji Background Container -->
+    <div id="emoji-background"></div>
+
+    <!-- Main Application Container -->
+    <div id="app-container" class="bg-[#E6E6FA] rounded-2xl shadow-2xl p-8 md:p-12 w-full max-w-4xl transform transition-all duration-500 ease-in-out opacity-0 animate-fadeIn z-10">
+
+        <!-- Window 1: Authentication (Login/Register) Screen -->
+        <div id="login-window" class="text-center">
+            <h2 class="text-4xl font-extrabold text-blue-800 mb-6 rounded-md p-2">
+                Learnova: The DSA Hurdle
+            </h2>
+            <p id="auth-subtitle" class="text-gray-600 mb-8">Welcome back! Please log in</p>
+
+            <form id="auth-form" class="space-y-6">
+                <div>
+                    <input
+                        type="text"
+                        id="username-input"
+                        placeholder="Username"
+                        class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300"
+                        required
+                    />
+                </div>
+                <div>
+                    <input
+                        type="password"
+                        id="password-input"
+                        placeholder="Password"
+                        class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300"
+                        required
+                    />
+                </div>
+                <button
+                    type="submit"
+                    id="auth-submit-btn"
+                    style="background-color: #87B1E6; color: black; font-weight: bold; padding: 16px 24px; border-radius: 12px; box-shadow: 2px 2px 6px rgba(0,0,0,0.2);"
+                    
+                    Login
+                </button>
+            </form>
+
+            <p id="auth-message" class="mt-6 text-lg"></p>
+
+            <button
+                id="toggle-auth-mode-btn"
+                class="mt-8 text-blue-600 hover:text-blue-800 font-semibold transition duration-300"
+                >
+                Don't have an account? Register
+            </button>
+        </div>
+
+        <!-- Window 2: Game Selection Screen -->
+        <div id="game-selection-window" class="text-center hidden">
+            <h2 class="text-4xl font-extrabold text-gray-800 mb-4">
+                Welcome, <span id="welcome-username" class="text-blue-700"></span>👋
+            </h2>
+            <p class="text-gray-600 mb-8">
+                Select a topic and choose a game to begin your learning journey.
+            </p>
+
+            <!-- Topic Selection Section (Dropdown) -->
+            <div id="topic-selection-section" class="mb-10 p-6 bg-green-50 rounded-2xl shadow-inner border border-green-200">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Select a Topic</h3>
+                <select
+                    id="topics-dropdown"
+                    class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-300 bg-white text-gray-700"
+                >
+                    <option value="">-- Choose a DSA Topic --</option>
+                    <!-- Options will be dynamically inserted here by JavaScript -->
+                </select>
+            </div>
+
+
+            <!-- Game Selection Section -->
+            <h3 class="text-3xl font-bold text-gray-800 mb-6">Select a Game</h3>
+            <div id="game-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <!-- Game cards will be dynamically inserted here by JavaScript -->
+            </div>
+
+            <!-- Recent Game History Section -->
+            <div id="recent-history-section" class="mb-10 p-6 bg-blue-50 rounded-2xl shadow-inner border border-blue-200">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Your Recent Game History</h3>
+                <div id="recent-history-table-container" class="overflow-x-auto">
+                    <!-- Recent history table will be dynamically inserted here -->
+                </div>
+                <p id="no-recent-history-message" class="text-gray-500 mt-4 hidden">No recent game history yet. Start playing!</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button
+                    id="start-game-btn"
+                    disabled
+                    class="py-4 px-8 rounded-xl font-bold text-white shadow-lg transform hover:scale-105 transition duration-300 ease-in-out bg-gray-400 cursor-not-allowed"
+                >
+                    Start Game
+                </button>
+                <button
+                    id="view-rewards-btn"
+                    class="py-4 px-8 rounded-xl font-bold text-purple-700 bg-purple-100 hover:bg-purple-200 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                >
+                    View Rewards & History
+                </button>
+            </div>
+
+            <!-- Game Loading Indicator -->
+            <div id="game-loading-indicator" class="flex items-center justify-center space-x-2 mt-8 hidden">
+                <div class="spinner"></div>
+                <span class="text-gray-600 text-lg">Generating game content...</span>
+            </div>
+            <p id="game-error-message" class="mt-4 text-red-600 hidden"></p>
+
+        </div>
+
+        <!-- Mystery Match Game Window -->
+        <div id="mystery-match-game-window" class="text-center hidden">
+            <h2 class="text-4xl font-extrabold text-gray-800 mb-6">Mystery Match</h2>
+            <p class="text-xl text-gray-700 mb-8">Topic: <span id="mm-game-topic" class="font-semibold text-indigo-700"></span></p>
+
+            <div class="bg-purple-50 rounded-2xl p-8 mb-8 shadow-inner border border-purple-200">
+                <p class="text-2xl font-bold text-gray-800 mb-4">Riddle <span id="mm-current-question-num">1</span> of <span id="mm-total-questions">3</span></p>
+                <p id="mm-riddle" class="text-xl text-gray-700 mb-6 italic">Loading riddle...</p>
+                <input
+                    type="text"
+                    id="mm-answer-input"
+                    placeholder="Your Answer"
+                    class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 text-center"
+                    autocomplete="off"
+                />
+                <p id="mm-feedback-message" class="mt-4 text-lg font-semibold"></p>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button
+                    id="mm-submit-answer-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                >
+                    Submit Answer
+                </button>
+                <button
+                    id="mm-next-question-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-green-600 hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    Next Question
+                </button>
+                <button
+                    id="mm-end-game-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    End Game
+                </button>
+            </div>
+            <p class="mt-6 text-xl font-bold text-gray-800">Score: <span id="mm-score">0</span></p>
+        </div>
+
+        <!-- Rapid Recall Arena Game Window -->
+        <div id="rapid-recall-arena-game-window" class="text-center hidden">
+            <h2 class="text-4xl font-extrabold text-gray-800 mb-6">Rapid Recall Arena</h2>
+            <p class="text-xl text-gray-700 mb-8">Topic: <span id="rra-game-topic" class="font-semibold text-indigo-700"></span></p>
+
+            <div class="bg-blue-50 rounded-2xl p-8 mb-8 shadow-inner border border-blue-200">
+                <p class="text-2xl font-bold text-gray-800 mb-4">Question <span id="rra-current-question-num">1</span> of <span id="rra-total-questions">5</span></p>
+                <p id="rra-question" class="text-xl text-gray-700 mb-6">Loading question...</p>
+
+                <div id="rra-options-container" class="grid grid-cols-1 gap-4 mb-6">
+                    <!-- MCQ options will be dynamically inserted here -->
+                </div>
+                <p id="rra-feedback-message" class="mt-4 text-lg font-semibold"></p>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button
+                    id="rra-submit-answer-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                >
+                    Submit Answer
+                </button>
+                <button
+                    id="rra-next-question-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-green-600 hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    Next Question
+                </button>
+                <button
+                    id="rra-end-game-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    End Game
+                </button>
+            </div>
+            <p class="mt-6 text-xl font-bold text-gray-800">Score: <span id="rra-score">0</span></p>
+        </div>
+
+        <!-- Concept Rocket Launch Game Window (2D Drag-and-Drop Version) -->
+        <div id="concept-rocket-launch-game-window" class="text-center hidden">
+            <h2 class="4xl font-extrabold text-gray-800 mb-6">Concept Rocket Launch</h2>
+            <p class="text-xl text-gray-700 mb-8">Topic: <span id="crl-game-topic" class="font-semibold text-indigo-700"></span></p>
+
+            <div class="bg-yellow-50 rounded-2xl p-8 mb-8 shadow-inner border border-yellow-200">
+                <p class="text-2xl font-bold text-gray-800 mb-4">Puzzle <span id="crl-current-puzzle-num">1</span> of <span id="crl-total-puzzles">3</span></p>
+                <p class="text-gray-700 mb-4">Drag and drop the blocks to arrange them in the correct logical order.</p>
+
+                <div id="crl-blocks-container" class="space-y-3 p-2 border border-yellow-300 rounded-lg bg-yellow-50">
+                    <!-- Knowledge blocks will be dynamically inserted here -->
+                </div>
+                <p id="crl-feedback-message" class="mt-4 text-lg font-semibold"></p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
+                <button
+                    id="crl-submit-order-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                >
+                    Submit Order
+                </button>
+                <button
+                    id="crl-next-puzzle-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-green-600 hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    Next Puzzle
+                </button>
+                <button
+                    id="crl-end-game-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    End Game
+                </button>
+            </div>
+            <p class="mt-6 text-xl font-bold text-gray-800">Score: <span id="crl-score">0</span></p>
+        </div>
+
+        <!-- Fix the Code Game Window -->
+        <div id="fix-the-code-game-window" class="text-center hidden">
+            <h2 class="4xl font-extrabold text-gray-800 mb-6">Fix the Code</h2>
+            <p class="text-xl text-gray-700 mb-8">Topic: <span id="ftc-game-topic" class="font-semibold text-indigo-700"></span></p>
+
+            <div class="bg-gray-50 rounded-2xl p-8 mb-8 shadow-inner border border-gray-200">
+                <p class="text-2xl font-bold text-gray-800 mb-4">Challenge <span id="ftc-current-challenge-num">1</span> of <span id="ftc-total-challenges">3</span></p>
+                <p id="ftc-description" class="text-gray-700 mb-4">Loading description...</p>
+
+                <div class="code-block-container">
+                    <code id="ftc-code-snippet">Loading code...</code>
+                </div>
+
+                <input
+                    type="text"
+                    id="ftc-answer-input"
+                    placeholder="Type the missing line here"
+                    class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition duration-300 text-center"
+                    autocomplete="off"
+                />
+                <p id="ftc-feedback-message" class="mt-4 text-lg font-semibold"></p>
+            </div>
+
+            <div class="flex justify-center gap-4 mt-6">
+                <button
+                    id="ftc-submit-answer-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                >
+                    Submit Code
+                </button>
+                <button
+                    id="ftc-next-challenge-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-green-600 hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    Next Challenge
+                </button>
+                <button
+                    id="ftc-end-game-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    End Game
+                </button>
+            </div>
+            <p class="mt-6 text-xl font-bold text-gray-800">Score: <span id="ftc-score">0</span></p>
+        </div>
+
+        <!-- Block Identifier Game Window (formerly Flowchart Reorder & Relabel) -->
+        <div id="flowchart-fixer-game-window" class="text-center hidden">
+            <h2 class="4xl font-extrabold text-gray-800 mb-6">Block Identifier</h2>
+            <p class="text-xl text-gray-700 mb-8">Topic: <span id="ff-game-topic" class="font-semibold text-indigo-700"></span></p>
+
+            <div class="bg-yellow-50 rounded-2xl p-8 mb-8 shadow-inner border border-yellow-200">
+                <p class="text-2xl font-bold text-gray-800 mb-4">Puzzle <span id="ff-current-challenge-num">1</span> of <span id="ff-total-challenges">3</span></p>
+                <p id="ff-description" class="text-gray-700 mb-4">Identify the missing concept for the unlabeled block in the sequence.</p>
+
+                <div id="flowchart-fixer-container" class="flowchart-container">
+                    <!-- Flowchart items (content inside) will be dynamically inserted here -->
+                    <div id="flowchart-fixer-loading-spinner" class="spinner-container">
+                        <div class="spinner mr-2"></div>
+                        <span>Generating puzzle...</span>
+                    </div>
+                </div>
+
+                <p id="ff-feedback-message" class="mt-4 text-lg font-semibold"></p>
+            </div>
+
+            <div class="flex justify-center gap-4 mt-6">
+                <button
+                    id="ff-submit-answer-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                >
+                    Submit Answer
+                </button>
+                <button
+                    id="ff-next-challenge-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-green-600 hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    Next Challenge
+                </button>
+                <button
+                    id="ff-end-game-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    End Game
+                </button>
+            </div>
+            <p class="mt-6 text-xl font-bold text-gray-800">Score: <span id="ff-score">0</span></p>
+        </div>
+
+        <!-- Spin and Solve Game Window -->
+        <div id="spin-and-solve-game-window" class="text-center hidden">
+            <h2 class="4xl font-extrabold text-gray-800 mb-6">Spin and Solve</h2>
+            <p class="text-xl text-gray-700 mb-8">Topic: <span id="sas-game-topic" class="font-semibold text-indigo-700"></span></p>
+
+            <div id="sas-spin-phase" class="bg-purple-50 rounded-2xl p-8 mb-8 shadow-inner border border-purple-200">
+                <p class="text-2xl font-bold text-gray-800 mb-4">Spin the Wheel to Pick a Topic!</p>
+                <canvas id="wheelCanvas" width="300" height="300"></canvas>
+                <button id="spinBtn" class="mt-6">Spin the Wheel!</button>
+                <p id="sas-spun-topic-display" class="mt-4 text-xl font-semibold text-purple-700"></p>
+            </div>
+
+            <div id="sas-question-phase" class="hidden">
+                <!-- MCQ Section -->
+                <div id="sas-mcq-section" class="question-section">
+                    <p class="text-2xl font-bold text-gray-800 mb-4">MCQ Question <span id="sas-mcq-current-num">1</span> of <span id="sas-mcq-total-num">5</span></p>
+                    <p id="sas-mcq-question" class="text-xl text-gray-700 mb-6">Loading MCQ question...</p>
+                    <div id="sas-mcq-options-container" class="grid grid-cols-1 gap-3 mb-6 text-left">
+                        <!-- MCQ options dynamically inserted here -->
+                    </div>
+                    <p id="sas-mcq-feedback" class="mt-4 text-lg font-semibold"></p>
+                </div>
+
+                <!-- Riddle Section -->
+                <div id="sas-riddle-section" class="question-section riddle hidden">
+                    <p class="text-2xl font-bold text-gray-800 mb-4">Riddle <span id="sas-riddle-current-num">1</span> of <span id="sas-riddle-total-num">5</span></p>
+                    <p id="sas-riddle-question" class="text-xl text-gray-700 mb-6 italic">Loading riddle...</p>
+                    <input
+                        type="text"
+                        id="sas-riddle-answer-input"
+                        placeholder="Your Answer"
+                        class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 text-center"
+                        autocomplete="off"
+                    />
+                    <p id="sas-riddle-feedback" class="mt-4 text-lg font-semibold"></p>
+                </div>
+
+                <div class="flex justify-center gap-4 mt-6">
+                    <button
+                        id="sas-submit-answer-btn"
+                        class="py-3 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                    >
+                        Submit Answer
+                    </button>
+                    <button
+                        id="sas-next-question-btn"
+                        class="py-3 px-6 rounded-xl font-bold text-white bg-green-600 hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                    >
+                        Next Question
+                    </button>
+                    <button
+                        id="sas-end-game-btn"
+                        class="py-3 px-6 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                    >
+                        End Game
+                    </button>
+                </div>
+            </div>
+            <p class="mt-6 text-xl font-bold text-gray-800">Score: <span id="sas-score">0</span></p>
+        </div>
+
+        <!-- Boss Fight Game Window -->
+        <div id="boss-fight-game-window" class="text-center hidden">
+            <h2 class="4xl font-extrabold text-gray-800 mb-6">Boss Fight: Ultimate DSA Challenge!</h2>
+            <p class="text-xl text-gray-700 mb-8">Topic: <span id="bf-game-topic" class="font-semibold text-indigo-700">Advanced DSA Concepts</span></p>
+
+            <div class="bg-red-50 rounded-2xl p-8 mb-8 shadow-inner border border-red-200">
+                <p class="text-2xl font-bold text-gray-800 mb-4">Question <span id="bf-current-question-num">1</span> of <span id="bf-total-questions">10</span></p>
+                <p id="bf-question" class="text-xl text-gray-700 mb-6">Loading question...</p>
+
+                <div id="bf-options-container" class="grid grid-cols-1 gap-4 mb-6">
+                    <!-- MCQ options will be dynamically inserted here -->
+                </div>
+                <p id="bf-feedback-message" class="mt-4 text-lg font-semibold"></p>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button
+                    id="bf-submit-answer-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                >
+                    Submit Answer
+                </button>
+                <button
+                    id="bf-next-question-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-green-600 hover:bg-green-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    Next Question
+                </button>
+                <button
+                    id="bf-end-game-btn"
+                    class="py-3 px-6 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out hidden"
+                >
+                    End Game
+                </button>
+            </div>
+            <p class="mt-6 text-xl font-bold text-gray-800">Score: <span id="bf-score">0</span></p>
+        </div>
+
+
+        <!-- Game Placeholder Modal (now only for other games) -->
+        <div id="game-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+            <div class="bg-white rounded-2xl p-8 max-w-lg w-full text-center shadow-2xl animate-scaleIn">
+                <h3 class="3xl font-bold text-gray-800 mb-4">Game Under Development!</h3>
+                <p class="text-xl text-gray-700 mb-6">
+                    You selected: <span id="modal-game-name" class="font-semibold text-purple-700"></span>
+                </p>
+                <p class="text-gray-600 mb-8">
+                    This game is currently under development. Please choose "Mystery Match", "Rapid Recall Arena", "Concept Rocket Launch", "Fix the Code", "Block Identifier", "Spin and Solve", or "Boss Fight" for a playable experience!
+                </p>
+                <button
+                    id="close-game-modal-btn"
+                    class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transform hover:scale-105 transition duration-300"
+                >
+                    Back to Game Selection
+                </button>
+            </div>
+        </div>
+
+        <!-- Window 3: Rewards and History Screen -->
+        <div id="rewards-history-window" class="text-center hidden">
+            <h2 class="4xl font-extrabold text-gray-800 mb-4">
+                Your Progress, <span id="progress-username" class="text-purple-700"></span>!
+            </h2>
+            <p class="text-gray-600 mb-8">
+                Check out your game history and earned rewards.
+            </p>
+
+            <!-- History Section -->
+            <div class="mb-10 p-6 bg-blue-50 rounded-2xl shadow-inner border border-blue-200">
+                <h3 class="2xl font-bold text-gray-800 mb-4">Game History</h3>
+                <div id="history-table-container" class="overflow-x-auto">
+                    <!-- History table will be dynamically inserted here -->
+                </div>
+                <p id="no-history-message" class="text-gray-500 mt-4 hidden">No game history yet. Start playing!</p>
+            </div>
+
+            <!-- Rewards Section -->
+            <div class="mb-10 p-6 bg-yellow-50 rounded-2xl shadow-inner border border-yellow-200">
+                <h3 class="2xl font-bold text-gray-800 mb-4">Your Rewards</h3>
+                <div id="rewards-grid-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Rewards will be dynamically inserted here -->
+                </div>
+                <p id="no-rewards-message" class="mt-4 text-gray-500 hidden">No rewards earned yet. Keep playing!</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button
+                    id="back-to-games-btn"
+                    class="py-4 px-8 rounded-xl font-bold text-purple-700 bg-purple-100 hover:bg-purple-200 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                >
+                    Back to Games
+                </button>
+                <button
+                    id="logout-btn"
+                    class="py-4 px-8 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transform hover:scale-105 transition duration-300 ease-in-out"
+                >
+                    Logout
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Utility for shuffling an array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
+        }
+
+        // DOM Elements
+        const appContainer = document.getElementById('app-container');
+        const loginWindow = document.getElementById('login-window');
+        const gameSelectionWindow = document.getElementById('game-selection-window');
+        const rewardsHistoryWindow = document.getElementById('rewards-history-window');
+        const mysteryMatchGameWindow = document.getElementById('mystery-match-game-window');
+        const rapidRecallArenaGameWindow = document.getElementById('rapid-recall-arena-game-window');
+        const conceptRocketLaunchGameWindow = document.getElementById('concept-rocket-launch-game-window');
+        const fixTheCodeGameWindow = document.getElementById('fix-the-code-game-window');
+        const flowchartFixerGameWindow = document.getElementById('flowchart-fixer-game-window'); // Now Block Identifier
+        const spinAndSolveGameWindow = document.getElementById('spin-and-solve-game-window'); // Spin and Solve
+        const bossFightGameWindow = document.getElementById('boss-fight-game-window'); // Boss Fight
+
+        // Auth Screen Elements
+        const authSubtitle = document.getElementById('auth-subtitle');
+        const authForm = document.getElementById('auth-form');
+        const usernameInput = document.getElementById('username-input');
+        const passwordInput = document.getElementById('password-input');
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const authMessage = document.getElementById('auth-message');
+        const toggleAuthModeBtn = document.getElementById('toggle-auth-mode-btn');
+
+        // Game Selection Screen Elements
+        const welcomeUsername = document.getElementById('welcome-username');
+        const topicSelectionSection = document.getElementById('topic-selection-section');
+        const topicsDropdown = document.getElementById('topics-dropdown');
+
+        const gameCardsContainer = document.getElementById('game-cards-container');
+        const startGameBtn = document.getElementById('start-game-btn');
+        const viewRewardsBtn = document.getElementById('view-rewards-btn');
+        const gameModal = document.getElementById('game-modal');
+        const modalGameName = document.getElementById('modal-game-name');
+        const closeGameModalBtn = document.getElementById('close-game-modal-btn');
+        const gameLoadingIndicator = document.getElementById('game-loading-indicator');
+        const gameErrorMessage = document.getElementById('game-error-message');
+        const recentHistoryTableContainer = document.getElementById('recent-history-table-container'); // New
+        const noRecentHistoryMessage = document.getElementById('no-recent-history-message'); // New
+
+        // Mystery Match Game Elements
+        const mmGameTopic = document.getElementById('mm-game-topic');
+        const mmCurrentQuestionNum = document.getElementById('mm-current-question-num');
+        const mmTotalQuestions = document.getElementById('mm-total-questions');
+        const mmRiddle = document.getElementById('mm-riddle');
+        const mmAnswerInput = document.getElementById('mm-answer-input');
+        const mmFeedbackMessage = document.getElementById('mm-feedback-message');
+        const mmSubmitAnswerBtn = document.getElementById('mm-submit-answer-btn');
+        const mmNextQuestionBtn = document.getElementById('mm-next-question-btn');
+        const mmEndGameBtn = document.getElementById('mm-end-game-btn');
+        const mmScore = document.getElementById('mm-score');
+
+        // Rapid Recall Arena Game Elements
+        const rraGameTopic = document.getElementById('rra-game-topic');
+        const rraCurrentQuestionNum = document.getElementById('rra-current-question-num');
+        const rraTotalQuestions = document.getElementById('rra-total-questions');
+        const rraQuestion = document.getElementById('rra-question');
+        const rraOptionsContainer = document.getElementById('rra-options-container');
+        const rraFeedbackMessage = document.getElementById('rra-feedback-message');
+        const rraSubmitAnswerBtn = document.getElementById('rra-submit-answer-btn');
+        const rraNextQuestionBtn = document.getElementById('rra-next-question-btn');
+        const rraEndGameBtn = document.getElementById('rra-end-game-btn');
+        const rraScore = document.getElementById('rra-score');
+
+        // Concept Rocket Launch Game State (2D)
+        const crlGameTopic = document.getElementById('crl-game-topic');
+        const crlCurrentPuzzleNum = document.getElementById('crl-current-puzzle-num');
+        const crlTotalPuzzles = document.getElementById('crl-total-puzzles');
+        const crlBlocksContainer = document.getElementById('crl-blocks-container');
+        const crlFeedbackMessage = document.getElementById('crl-feedback-message');
+        const crlSubmitOrderBtn = document.getElementById('crl-submit-order-btn');
+        const crlNextPuzzleBtn = document.getElementById('crl-next-puzzle-btn');
+        const crlEndGameBtn = document.getElementById('crl-end-game-btn');
+        const crlScore = document.getElementById('crl-score');
+        let conceptRocketLaunchPuzzles = [];
+        let currentPuzzleIndexCRL = 0;
+        let currentScoreCRL = 0;
+        let currentDisplayedBlocksCRL = []; // Stores the current order of blocks in the UI
+        let draggedItem = null; // Stores the HTML element being dragged
+
+        // Fix the Code Game State
+        const ftcGameTopic = document.getElementById('ftc-game-topic');
+        const ftcCurrentChallengeNum = document.getElementById('ftc-current-challenge-num');
+        const ftcTotalChallenges = document.getElementById('ftc-total-challenges');
+        const ftcDescription = document.getElementById('ftc-description');
+        const ftcCodeSnippet = document.getElementById('ftc-code-snippet');
+        const ftcAnswerInput = document.getElementById('ftc-answer-input');
+        const ftcFeedbackMessage = document.getElementById('ftc-feedback-message');
+        const ftcSubmitAnswerBtn = document.getElementById('ftc-submit-answer-btn');
+        const ftcNextChallengeBtn = document.getElementById('ftc-next-challenge-btn');
+        const ftcEndGameBtn = document.getElementById('ftc-end-game-btn');
+        const ftcScore = document.getElementById('ftc-score');
+        let fixTheCodeChallenges = [];
+        let currentChallengeIndexFTC = 0;
+        let currentScoreFTC = 0;
+
+        // Block Identifier Game State (formerly Flowchart Reorder & Relabel)
+        const ffGameTopic = document.getElementById('ff-game-topic');
+        const ffCurrentChallengeNum = document.getElementById('ff-current-challenge-num');
+        const ffTotalChallenges = document.getElementById('ff-total-challenges');
+        const ffDescription = document.getElementById('ff-description');
+        const flowchartFixerContainer = document.getElementById('flowchart-fixer-container');
+        const flowchartFixerLoadingSpinner = document.getElementById('flowchart-fixer-loading-spinner');
+        const ffFeedbackMessage = document.getElementById('ff-feedback-message');
+        const ffSubmitAnswerBtn = document.getElementById('ff-submit-answer-btn');
+        const ffNextChallengeBtn = document.getElementById('ff-next-challenge-btn');
+        const ffEndGameBtn = document.getElementById('ff-end-game-btn');
+        const ffScore = document.getElementById('ff-score');
+        let blockIdentifierChallenges = []; // Renamed from flowchartChallenges
+        let currentChallengeIndexFF = 0;
+        let currentScoreFF = 0;
+
+        // Spin and Solve Game Elements
+        const sasGameTopic = document.getElementById('sas-game-topic');
+        const sasSpinPhase = document.getElementById('sas-spin-phase');
+        const sasQuestionPhase = document.getElementById('sas-question-phase');
+        const wheelCanvas = document.getElementById('wheelCanvas');
+        const spinBtn = document.getElementById('spinBtn');
+        const sasSpunTopicDisplay = document.getElementById('sas-spun-topic-display');
+
+        const sasMcqSection = document.getElementById('sas-mcq-section');
+        const sasMcqCurrentNum = document.getElementById('sas-mcq-current-num');
+        const sasMcqTotalNum = document.getElementById('sas-mcq-total-num');
+        const sasMcqQuestion = document.getElementById('sas-mcq-question');
+        const sasMcqOptionsContainer = document.getElementById('sas-mcq-options-container');
+        const sasMcqFeedback = document.getElementById('sas-mcq-feedback');
+
+        const sasRiddleSection = document.getElementById('sas-riddle-section');
+        const sasRiddleCurrentNum = document.getElementById('sas-riddle-current-num');
+        const sasRiddleTotalNum = document.getElementById('sas-riddle-total-num');
+        const sasRiddleQuestion = document.getElementById('sas-riddle-question');
+        const sasRiddleAnswerInput = document.getElementById('sas-riddle-answer-input');
+        const sasRiddleFeedback = document.getElementById('sas-riddle-feedback');
+
+        const sasSubmitAnswerBtn = document.getElementById('sas-submit-answer-btn');
+        const sasNextQuestionBtn = document.getElementById('sas-next-question-btn');
+        const sasEndGameBtn = document.getElementById('sas-end-game-btn');
+        const sasScore = document.getElementById('sas-score');
+
+        let spinAndSolveContent = null; // Stores the generated MCQs and Riddles
+        let currentQuestionTypeSAS = 'mcq'; // 'mcq' or 'riddle'
+        let currentQuestionIndexSAS = 0;
+        let currentScoreSAS = 0;
+        let selectedOptionSAS = null; // For MCQ selection
+        let isSpinning = false; // To prevent multiple spins
+
+        // Boss Fight Game Elements
+        const bfGameTopic = document.getElementById('bf-game-topic');
+        const bfCurrentQuestionNum = document.getElementById('bf-current-question-num');
+        const bfTotalQuestions = document.getElementById('bf-total-questions');
+        const bfQuestion = document.getElementById('bf-question');
+        const bfOptionsContainer = document.getElementById('bf-options-container');
+        const bfFeedbackMessage = document.getElementById('bf-feedback-message');
+        const bfSubmitAnswerBtn = document.getElementById('bf-submit-answer-btn');
+        const bfNextQuestionBtn = document.getElementById('bf-next-question-btn');
+        const bfEndGameBtn = document.getElementById('bf-end-game-btn');
+        const bfScore = document.getElementById('bf-score');
+
+        let bossFightQuestions = [];
+        let currentQuestionIndexBF = 0;
+        let currentScoreBF = 0;
+        let selectedOptionBF = null; // For MCQ selection in Boss Fight
+
+        // Rewards History Screen Elements
+        const progressUsername = document.getElementById('progress-username');
+        const historyTableContainer = document.getElementById('history-table-container');
+        const noHistoryMessage = document.getElementById('no-history-message');
+        const rewardsGridContainer = document.getElementById('rewards-grid-container');
+        const noRewardsMessage = document.getElementById('no-rewards-message');
+        const backToGamesBtn = document.getElementById('back-to-games-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Global state variables
+        let isRegistering = false;
+        let loggedInUsername = '';
+        let selectedGame = null;
+        let selectedTopic = null;
+        let bossFightUnlocked = false; // Tracks if Boss Fight is unlocked for the current user
+
+        // Predefined DSA Topics for Spin Wheel (now limited to 5)
+        const spinWheelTopics = [
+            "Linked Lists",
+            "Stacks",
+            "Queues",
+            "Heaps",
+            "Trees"
+        ];
+        // Full list of DSA Topics for dropdown (now limited to 5)
+        const dsaTopics = [
+            "Linked Lists",
+            "Stacks",
+            "Queues",
+            "Trees",
+            "Heaps"
+        ];
+
+        // Games list with Boss Fight initially locked
+        const games = [
+            { name: 'Mystery Match', description: 'Players see vague definitions or riddles related to DSA and say a correct word.', icon: '❓', id: 'mystery-match-card' },
+            { name: 'Concept Rocket Launch', description: 'Assemble Knowledge blocks in correct order to launch the rocket. If wrong order, rocket fails to launch.', icon: '🚀', id: 'concept-rocket-launch-card' },
+            { name: 'Rapid Recall Arena', description: '30-second blitz MCQ round with rapidly flashing questions.', icon: '⚡', id: 'rapid-recall-arena-card' },
+            { name: 'Fix the Code', description: 'Given a set of code with one missing line, identify it and type it there.', icon: '💻', id: 'fix-the-code-card' },
+            { name: 'Block Identifier', description: 'Identify the missing concept for the unlabeled block in the sequence.', icon: '🧩', id: 'block-identifier-card' },
+            { name: 'Spin and Solve', description: 'Spin a wheel to pick a topic, then solve MCQs and riddles!', icon: '🎡', id: 'spin-and-solve-card' },
+            { name: 'Boss Fight', description: 'After 2 perfect games, face 10 ultimate DSA questions!', icon: '👹', id: 'boss-fight-card', locked: true }, // Updated description for 2 games
+        ];
+
+        // --- Utility Functions ---
+
+        // Function to show a specific window and hide others
+        function showWindow(windowToShow) {
+            loginWindow.classList.add('hidden');
+            gameSelectionWindow.classList.add('hidden');
+            rewardsHistoryWindow.classList.add('hidden');
+            mysteryMatchGameWindow.classList.add('hidden');
+            rapidRecallArenaGameWindow.classList.add('hidden');
+            conceptRocketLaunchGameWindow.classList.add('hidden');
+            fixTheCodeGameWindow.classList.add('hidden');
+            flowchartFixerGameWindow.classList.add('hidden');
+            spinAndSolveGameWindow.classList.add('hidden');
+            bossFightGameWindow.classList.add('hidden'); // Hide Boss Fight
+            gameModal.classList.add('hidden');
+            windowToShow.classList.remove('hidden');
+            // Re-apply fade-in animation for a fresh feel
+            appContainer.classList.remove('animate-fadeIn');
+            void appContainer.offsetWidth; // Trigger reflow
+            appContainer.classList.add('animate-fadeIn');
+        }
+
+        // Function to display messages
+        function displayMessage(element, msg, isSuccess = false) {
+            element.textContent = msg;
+            element.className = `mt-6 text-lg ${isSuccess ? 'text-green-600' : 'text-red-600'}`;
+            if (!msg) { // Hide message if empty
+                element.textContent = '';
+                element.className = '';
+            }
+        }
+
+        // --- Auth Screen Logic ---
+
+        // Handle form submission (login/register)
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            const endpoint = isRegistering ? '/register' : '/login';
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                const data = await response.json();
+                displayMessage(authMessage, data.message, data.success);
+
+                if (data.success) {
+                    if (!isRegistering) { // Only proceed to game selection if logging in
+                        loggedInUsername = username;
+                        await checkBossFightUnlockStatus(); // Check unlock status after login
+                        showGameSelectionScreen();
+                    } else { // After successful registration, switch to login form
+                        isRegistering = false;
+                        updateAuthFormUI();
+                        usernameInput.value = ''; // Clear fields
+                        passwordInput.value = '';
+                    }
+                }
+            } catch (error) {
+                console.error('Error during fetch operation:', error);
+                displayMessage(authMessage, 'An error occurred. Please ensure the Python backend is running and accessible at http://127.0.0.1:5000.', false);
+            }
+        });
+
+        // Toggle between login and register modes
+        toggleAuthModeBtn.addEventListener('click', () => {
+            isRegistering = !isRegistering;
+            updateAuthFormUI();
+            displayMessage(authMessage, ''); // Clear message
+            usernameInput.value = ''; // Clear fields
+            passwordInput.value = '';
+        });
+
+        // Update UI based on login/register mode
+        function updateAuthFormUI() {
+            authSubtitle.textContent = isRegistering ? 'Create your account' : 'Welcome back! Please log in';
+            authSubmitBtn.textContent = isRegistering ? 'Register' : 'Login';
+            toggleAuthModeBtn.textContent = isRegistering
+                ? 'Already have an account? Login'
+                : "Don't have an account? Register";
+        }
+
+        // --- Game Selection Screen Logic ---
+
+        // Show game selection screen
+        async function showGameSelectionScreen() {
+            welcomeUsername.textContent = loggedInUsername;
+            renderDSATopicsDropdown(); // Render the DSA topics in a dropdown
+            renderGameCards();
+            await checkBossFightUnlockStatus(); // Re-check and update card visibility
+            await renderRecentGameHistory(); // New: Render recent game history
+            showWindow(gameSelectionWindow);
+            selectedGame = null; // Reset selected game
+            selectedTopic = null; // Reset selected topic
+            topicsDropdown.value = ""; // Reset dropdown selection
+            updateStartGameButtonState(); // Update button state
+            gameLoadingIndicator.classList.add('hidden'); // Hide loading
+            gameErrorMessage.classList.add('hidden'); // Hide error
+        }
+
+        // Render DSA topics in a dropdown dynamically
+        function renderDSATopicsDropdown() {
+            topicsDropdown.innerHTML = '<option value="">-- Choose a DSA Topic --</option>'; // Clear and add default
+            dsaTopics.forEach(topic => {
+                const option = document.createElement('option');
+                option.value = topic;
+                option.textContent = topic;
+                topicsDropdown.appendChild(option);
+            });
+            // Add event listener for dropdown change
+            topicsDropdown.removeEventListener('change', handleTopicChange); // Remove old listener to prevent duplicates
+            topicsDropdown.addEventListener('change', handleTopicChange);
+        }
+
+        // Handle game selection
+        function selectGame(game, event) {
+            selectedGame = game;
+            // Update button styles to show selection
+            Array.from(gameCardsContainer.children).forEach(card => {
+                card.classList.remove('border-purple-600', 'bg-purple-100');
+                card.classList.add('border-gray-200', 'bg-white', 'hover:bg-gray-50');
+            });
+            event.currentTarget.classList.remove('border-gray-200', 'bg-white', 'hover:bg-gray-50');
+            event.currentTarget.classList.add('border-purple-600', 'bg-purple-100');
+
+            updateStartGameButtonState();
+        }
+
+        // Handle topic selection from dropdown
+        function handleTopicChange(event) {
+            selectedTopic = event.target.value === "" ? null : event.target.value; // If default option selected, set to null
+            updateStartGameButtonState();
+        }
+
+        // Update Start Game button enabled/disabled state
+        function updateStartGameButtonState() {
+            // "Block Identifier", "Spin and Solve", and "Boss Fight"
+            // don't need a specific topic from the dropdown.
+            const requiresTopic = !(selectedGame && (selectedGame.name === "Block Identifier" || selectedGame.name === "Spin and Solve" || selectedGame.name === "Boss Fight"));
+
+            if (selectedGame && (!requiresTopic || selectedTopic)) {
+                startGameBtn.disabled = false;
+                startGameBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                startGameBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            } else {
+                startGameBtn.disabled = true;
+                startGameBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                startGameBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+            }
+        }
+
+        // Function to check Boss Fight unlock status from backend
+        async function checkBossFightUnlockStatus() {
+            if (!loggedInUsername) {
+                bossFightUnlocked = false;
+                updateBossFightCardUI();
+                return;
+            }
+            try {
+                const response = await fetch('http://127.0.0.1:5000/check_boss_fight_status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: loggedInUsername })
+                });
+                const data = await response.json();
+                bossFightUnlocked = data.is_unlocked;
+                updateBossFightCardUI();
+            }
+            catch (error) {
+                console.error('Error checking boss fight status:', error);
+                bossFightUnlocked = false; // Assume locked on error
+                updateBossFightCardUI();
+            }
+        }
+
+        // Function to update Boss Fight card UI based on unlock status
+        function updateBossFightCardUI() {
+            const bossFightCard = document.getElementById('boss-fight-card');
+            if (bossFightCard) {
+                if (bossFightUnlocked) {
+                    bossFightCard.classList.remove('locked');
+                    bossFightCard.classList.add('unlocked');
+                    bossFightCard.querySelector('.text-gray-400')?.remove(); // Remove lock icon
+                    bossFightCard.querySelector('h4').classList.remove('text-gray-600');
+                    bossFightCard.querySelector('h4').classList.add('text-gray-800');
+                    bossFightCard.querySelector('p').classList.remove('text-gray-500');
+                    bossFightCard.querySelector('p').classList.add('text-gray-600');
+                    // Ensure the correct icon is displayed
+                    if (!bossFightCard.querySelector('.boss-icon')) {
+                        const iconSpan = document.createElement('span');
+                        iconSpan.className = 'text-5xl mb-4 boss-icon';
+                        iconSpan.textContent = '👹'; // Boss icon
+                        bossFightCard.prepend(iconSpan);
+                    }
+                } else {
+                    bossFightCard.classList.add('locked');
+                    bossFightCard.classList.remove('unlocked');
+                    // Ensure lock icon is present and boss icon is hidden
+                    if (!bossFightCard.querySelector('.text-gray-400')) {
+                        const lockIconSpan = document.createElement('span');
+                        lockIconSpan.className = 'text-5xl mb-4 text-gray-400';
+                        lockIconSpan.textContent = '🔒';
+                        bossFightCard.prepend(lockIconSpan);
+                    }
+                    bossFightCard.querySelector('.boss-icon')?.remove(); // Remove boss icon if present
+                    bossFightCard.querySelector('h4').classList.add('text-gray-600');
+                    bossFightCard.querySelector('h4').classList.remove('text-gray-800');
+                    bossFightCard.querySelector('p').classList.add('text-gray-500');
+                    bossFightCard.querySelector('p').classList.remove('text-gray-600');
+                }
+            }
+        }
+
+        // Render game cards dynamically
+        function renderGameCards() {
+            gameCardsContainer.innerHTML = ''; // Clear existing cards
+            games.forEach(game => {
+                const button = document.createElement('button');
+                button.className = `
+                    p-6 rounded-2xl shadow-lg border-2
+                    flex flex-col items-center justify-center text-center
+                    transform hover:scale-105 transition duration-300 ease-in-out
+                    border-gray-200 bg-white hover:bg-gray-50
+                `;
+                button.id = game.id; // Set the ID for the button
+                
+                if (game.locked) {
+                    button.classList.add('locked'); // Apply locked styles
+                    button.innerHTML = `
+                        <span class="text-5xl mb-4 text-gray-400">🔒</span>
+                        <h4 class="text-xl font-semibold text-gray-600 mb-2">${game.name}</h4>
+                        <p class="text-gray-500 text-sm">${game.description}</p>
+                    `;
+                } else {
+                    button.innerHTML = `
+                        <span class="text-5xl mb-4 ${game.id === 'boss-fight-card' ? 'boss-icon' : ''}">${game.icon}</span>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-2">${game.name}</h4>
+                        <p class="text-gray-600 text-sm">${game.description}</p>
+                    `;
+                }
+
+                button.addEventListener('click', (event) => { // Pass event to access currentTarget
+                    if (game.locked && !bossFightUnlocked) {
+                        displayMessage(gameErrorMessage, 'This game is locked! Achieve 2 perfect game scores to unlock the Boss Fight.', false); // Updated message
+                        return;
+                    }
+                    selectGame(game, event);
+                });
+                gameCardsContainer.appendChild(button);
+            });
+            updateBossFightCardUI(); // Ensure Boss Fight card reflects current unlock status
+        }
+
+
+        // Start Game button click
+        startGameBtn.addEventListener('click', async () => {
+            if (!selectedGame) {
+                displayMessage(gameErrorMessage, 'Please select a game.', false);
+                return;
+            }
+            // Check if topic is required and selected, unless it's a game that doesn't need it
+            const requiresTopic = !(selectedGame && (selectedGame.name === "Block Identifier" || selectedGame.name === "Spin and Solve" || selectedGame.name === "Boss Fight"));
+            if (requiresTopic && !selectedTopic) {
+                displayMessage(gameErrorMessage, 'Please select a topic for this game.', false);
+                return;
+            }
+
+            // --- Game Attempt Restriction Check ---
+            try {
+                const attemptsResponse = await fetch('http://127.0.0.1:5000/get_game_attempts', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: loggedInUsername,
+                        game_type: selectedGame.name,
+                        topic: selectedTopic // Pass topic for specific game attempts
+                    })
+                });
+                const attemptsData = await attemptsResponse.json();
+
+                if (attemptsData.success && attemptsData.attempts >= 3) {
+                    displayMessage(gameErrorMessage, `You have reached the maximum 3 attempts for ${selectedGame.name} on topic "${selectedTopic || 'N/A'}". Please try another game or topic.`, false);
+                    return; // Prevent game start
+                }
+            } catch (error) {
+                console.error('Error checking game attempts:', error);
+                displayMessage(gameErrorMessage, 'Failed to check game attempts. Please try again.', false);
+                return; // Prevent game start on error
+            }
+            // --- End Game Attempt Restriction Check ---
+
+
+            gameLoadingIndicator.classList.remove('hidden');
+            gameErrorMessage.classList.add('hidden'); // Clear previous error
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30-second timeout
+
+            try {
+                // For Spin and Solve and Boss Fight, we don't send a topic initially; it's determined by the game.
+                const topicToSend = (selectedGame.name === "Spin and Solve" || selectedGame.name === "Boss Fight") ? null : selectedTopic;
+
+                const response = await fetch('http://127.0.0.1:5000/generate_game_content', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ game_type: selectedGame.name, topic: topicToSend }),
+                    signal: controller.signal // Attach the abort signal
+                });
+
+                clearTimeout(timeoutId); // Clear the timeout if response is received
+
+                const data = await response.json();
+
+                if (data.success && data.content) { // content can be an empty array if no questions
+                    gameLoadingIndicator.classList.add('hidden'); // Hide loading after success
+
+                    if (selectedGame.name === "Mystery Match") {
+                        mysteryMatchQuestions = data.content;
+                        currentQuestionIndexMM = 0;
+                        currentScoreMM = 0;
+                        showWindow(mysteryMatchGameWindow);
+                        initMysteryMatchGame();
+                    } else if (selectedGame.name === "Rapid Recall Arena") {
+                        rapidRecallArenaQuestions = data.content;
+                        currentQuestionIndexRRA = 0;
+                        currentScoreRRA = 0;
+                        selectedOptionRRA = null; // Reset selected option
+                        showWindow(rapidRecallArenaGameWindow);
+                        initRapidRecallArenaGame();
+                    } else if (selectedGame.name === "Concept Rocket Launch") {
+                        conceptRocketLaunchPuzzles = data.content;
+                        currentPuzzleIndexCRL = 0;
+                        currentScoreCRL = 0;
+                        showWindow(conceptRocketLaunchGameWindow);
+                        initConceptRocketLaunchGame();
+                    } else if (selectedGame.name === "Fix the Code") {
+                        fixTheCodeChallenges = data.content;
+                        currentChallengeIndexFTC = 0;
+                        currentScoreFTC = 0;
+                        showWindow(fixTheCodeGameWindow);
+                        initFixTheCodeGame();
+                    } else if (selectedGame.name === "Block Identifier") {
+                        blockIdentifierChallenges = data.content;
+                        currentChallengeIndexFF = 0;
+                        currentScoreFF = 0;
+                        showWindow(flowchartFixerGameWindow);
+                        initBlockIdentifierGame();
+                    } else if (selectedGame.name === "Spin and Solve") {
+                        // For Spin and Solve, content is NOT fetched here, but after the wheel spin.
+                        // We just transition to the Spin and Solve window.
+                        showWindow(spinAndSolveGameWindow);
+                        initSpinAndSolveGame(); // This will draw the wheel and prepare for spin
+                    } else if (selectedGame.name === "Boss Fight") { // New Boss Fight Game
+                        bossFightQuestions = data.content;
+                        currentQuestionIndexBF = 0;
+                        currentScoreBF = 0;
+                        selectedOptionBF = null;
+                        showWindow(bossFightGameWindow);
+                        initBossFightGame();
+                    }
+                    else {
+                        // For other games, show the "Under Development" modal
+                        modalGameName.textContent = selectedGame.name;
+                        // Updated modal message as Mixed Flow is removed
+                        const modalDescriptionElement = document.createElement('p');
+                        modalDescriptionElement.className = 'text-gray-600 mb-8';
+                        modalDescriptionElement.textContent = `This game (${selectedGame.name}) is currently under development. Please choose "Mystery Match", "Rapid Recall Arena", "Concept Rocket Launch", "Fix the Code", "Block Identifier", "Spin and Solve", or "Boss Fight" for a playable experience!`;
+                        
+                        // Clear existing content and append new description
+                        const existingModalDescription = gameModal.querySelector('.text-gray-600.mb-8');
+                        if (existingModalDescription) {
+                            existingModalDescription.replaceWith(modalDescriptionElement);
+                        } else {
+                            // If it doesn't exist, find a suitable place to append it
+                            const modalContentDiv = gameModal.querySelector('.bg-white');
+                            if (modalContentDiv) {
+                                modalContentDiv.insertBefore(modalDescriptionElement, closeGameModalBtn.parentNode);
+                            }
+                        }
+                        gameModal.classList.remove('hidden');
+                    }
+
+                } else {
+                    displayMessage(gameErrorMessage, data.message || 'Failed to generate game content. Please try again.', false);
+                }
+            } catch (error) {
+                console.error('Error fetching game content:', error);
+                if (error.name === 'AbortError') {
+                    displayMessage(gameErrorMessage, 'Request timed out. The backend took too long to respond. Please try again or choose a different game/topic.', false);
+                } else {
+                    displayMessage(gameErrorMessage, 'Network error or backend issue. Please ensure backend is running and API key is valid.', false);
+                }
+            } finally {
+                gameLoadingIndicator.classList.add('hidden');
+            }
+        });
+
+        // Close Game Modal (for "under development" games)
+        closeGameModalBtn.addEventListener('click', () => {
+            gameModal.classList.add('hidden');
+        });
+
+        // Function to record game results to backend
+        async function recordGameResult(gameType, totalQuestions, correctAnswers, topicPlayed = 'N/A') {
+            if (!loggedInUsername) return; // Cannot record if not logged in
+            try {
+                const response = await fetch('http://127.0.0.1:5000/record_game_result', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: loggedInUsername,
+                        game_type: gameType,
+                        total_questions: totalQuestions,
+                        correct_answers: correctAnswers,
+                        topic: topicPlayed // Pass the topic here
+                    })
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    console.error('Failed to record game result:', data.message);
+                } else {
+                    console.log('Game result recorded successfully:', data.message);
+                    await checkBossFightUnlockStatus(); // Re-check unlock status after recording result
+                }
+            } catch (error) {
+                console.error('Error recording game result:', error);
+            }
+        }
+
+
+        // --- Mystery Match Game Logic ---
+        function initMysteryMatchGame() {
+            mmGameTopic.textContent = selectedTopic;
+            mmTotalQuestions.textContent = mysteryMatchQuestions.length;
+            mmScore.textContent = currentScoreMM;
+            mmAnswerInput.value = '';
+            mmAnswerInput.disabled = false;
+            mmFeedbackMessage.textContent = '';
+            mmSubmitAnswerBtn.classList.remove('hidden');
+            mmNextQuestionBtn.classList.add('hidden');
+            mmEndGameBtn.classList.add('hidden');
+            displayMysteryMatchQuestion();
+        }
+
+        function displayMysteryMatchQuestion() {
+            if (currentQuestionIndexMM < mysteryMatchQuestions.length) {
+                const question = mysteryMatchQuestions[currentQuestionIndexMM];
+                mmCurrentQuestionNum.textContent = currentQuestionIndexMM + 1;
+                mmRiddle.textContent = question.riddle;
+                mmAnswerInput.value = '';
+                mmAnswerInput.disabled = false;
+                mmFeedbackMessage.textContent = '';
+                mmFeedbackMessage.className = 'mt-4 text-lg font-semibold';
+                mmSubmitAnswerBtn.classList.remove('hidden');
+                mmNextQuestionBtn.classList.add('hidden');
+            } else {
+                endMysteryMatchGame();
+            }
+        }
+
+        mmSubmitAnswerBtn.addEventListener('click', () => {
+            const userAnswer = mmAnswerInput.value.trim();
+            const correctAnswer = mysteryMatchQuestions[currentQuestionIndexMM].answer.trim();
+
+            if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                mmFeedbackMessage.textContent = 'Correct!';
+                mmFeedbackMessage.classList.remove('text-red-600');
+                mmFeedbackMessage.classList.add('text-green-600');
+                currentScoreMM += 1;
+                mmScore.textContent = currentScoreMM;
+            } else {
+                mmFeedbackMessage.textContent = `Incorrect. The answer was: ${correctAnswer}`;
+                mmFeedbackMessage.classList.remove('text-green-600');
+                mmFeedbackMessage.classList.add('text-red-600');
+            }
+            mmAnswerInput.disabled = true;
+            mmSubmitAnswerBtn.classList.add('hidden');
+
+            if (currentQuestionIndexMM < mysteryMatchQuestions.length - 1) {
+                mmNextQuestionBtn.classList.remove('hidden');
+            } else {
+                mmEndGameBtn.classList.remove('hidden');
+            }
+        });
+
+        mmNextQuestionBtn.addEventListener('click', () => {
+            currentQuestionIndexMM++;
+            displayMysteryMatchQuestion();
+        });
+
+        mmEndGameBtn.addEventListener('click', () => {
+            endMysteryMatchGame();
+        });
+
+        function endMysteryMatchGame() {
+            const totalQuestions = mysteryMatchQuestions.length;
+            const gameTopic = mmGameTopic.textContent; // Get the topic from the display
+            recordGameResult("Mystery Match", totalQuestions, currentScoreMM, gameTopic);
+
+            const isPerfect = currentScoreMM === totalQuestions;
+            let winMessage = '';
+            if (isPerfect) {
+                winMessage = `<p class="text-green-600 font-bold text-2xl mb-4">You won this game on ${gameTopic}!</p>`;
+            }
+
+            const endGameModal = document.createElement('div');
+            endGameModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+            endGameModal.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 max-w-lg w-full text-center shadow-2xl animate-scaleIn">
+                    <h3 class="3xl font-bold text-gray-800 mb-4">Game Over!</h3>
+                    ${winMessage}
+                    <p class="text-xl text-gray-700 mb-6">Your final score is: <span class="font-semibold text-purple-700">${currentScoreMM} out of ${totalQuestions}</span></p>
+                    <button id="end-game-modal-close-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transform hover:scale-105 transition duration-300">
+                        Back to Game Selection
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(endGameModal);
+
+            document.getElementById('end-game-modal-close-btn').addEventListener('click', () => {
+                document.body.removeChild(endGameModal);
+                showGameSelectionScreen();
+            });
+        }
+
+        // --- Rapid Recall Arena Game Logic ---
+        function initRapidRecallArenaGame() {
+            rraGameTopic.textContent = selectedTopic;
+            rraTotalQuestions.textContent = rapidRecallArenaQuestions.length;
+            rraScore.textContent = currentScoreRRA;
+            rraFeedbackMessage.textContent = '';
+            rraSubmitAnswerBtn.classList.remove('hidden');
+            rraNextQuestionBtn.classList.add('hidden');
+            rraEndGameBtn.classList.add('hidden');
+            displayRapidRecallQuestion();
+        }
+
+        function displayRapidRecallQuestion() {
+            if (currentQuestionIndexRRA < rapidRecallArenaQuestions.length) {
+                const questionData = rapidRecallArenaQuestions[currentQuestionIndexRRA];
+                rraCurrentQuestionNum.textContent = currentQuestionIndexRRA + 1;
+                rraQuestion.textContent = questionData.question;
+                rraOptionsContainer.innerHTML = ''; // Clear previous options
+                rraFeedbackMessage.textContent = '';
+                rraFeedbackMessage.className = 'mt-4 text-lg font-semibold'; // Reset class
+                selectedOptionRRA = null; // Reset selected option for new question
+
+                // Create option divs with icon and checkmark
+                const optionKeys = ['A', 'B', 'C', 'D'];
+                optionKeys.forEach(key => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = `rra-option-item`;
+                    optionDiv.dataset.optionKey = key; // Store the option key
+                    optionDiv.innerHTML = `
+                        <span class="option-icon">●</span> <!-- Placeholder icon (circle) -->
+                        <span class="option-text">${key}: ${questionData.options[key]}</span>
+                        <svg class="checkmark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    `;
+                    optionDiv.addEventListener('click', () => selectRRAOption(optionDiv, key));
+                    rraOptionsContainer.appendChild(optionDiv);
+                });
+
+                rraSubmitAnswerBtn.classList.remove('hidden');
+                rraNextQuestionBtn.classList.add('hidden');
+            } else {
+                endRapidRecallArenaGame();
+            }
+        }
+
+        function selectRRAOption(selectedDiv, key) {
+            // Remove selection from all options first
+            Array.from(rraOptionsContainer.children).forEach(div => {
+                div.classList.remove('selected');
+            });
+            // Add selection to the clicked div
+            selectedDiv.classList.add('selected');
+            selectedOptionRRA = key;
+            rraFeedbackMessage.textContent = ''; // Clear feedback on new selection
+        }
+
+        rraSubmitAnswerBtn.addEventListener('click', () => {
+            if (!selectedOptionRRA) {
+                rraFeedbackMessage.textContent = 'Please select an option!';
+                rraFeedbackMessage.classList.remove('text-green-600');
+                rraFeedbackMessage.classList.add('text-red-600');
+                return;
+            }
+
+            const currentQuestion = rapidRecallArenaQuestions[currentQuestionIndexRRA];
+            const correctAnswer = currentQuestion.correct_answer;
+
+            // Disable all options and highlight correct/incorrect
+            Array.from(rraOptionsContainer.children).forEach(div => {
+                div.style.pointerEvents = 'none'; // Disable further clicks
+                const key = div.dataset.optionKey;
+                if (key === correctAnswer) {
+                    div.classList.add('correct');
+                } else if (key === selectedOptionRRA) {
+                    div.classList.add('incorrect');
+                }
+            });
+
+            if (selectedOptionRRA === correctAnswer) {
+                rraFeedbackMessage.textContent = 'Correct!';
+                rraFeedbackMessage.classList.remove('text-red-600');
+                rraFeedbackMessage.classList.add('text-green-600');
+                currentScoreRRA += 1;
+                rraScore.textContent = currentScoreRRA;
+            } else {
+                rraFeedbackMessage.textContent = `Incorrect. The correct answer was: ${currentQuestion.options[correctAnswer]}`;
+                rraFeedbackMessage.classList.remove('text-green-600');
+                rraFeedbackMessage.classList.add('text-red-600');
+            }
+
+            rraSubmitAnswerBtn.classList.add('hidden');
+            if (currentQuestionIndexRRA < rapidRecallArenaQuestions.length - 1) {
+                rraNextQuestionBtn.classList.remove('hidden');
+            } else {
+                rraEndGameBtn.classList.remove('hidden');
+            }
+        });
+
+        rraNextQuestionBtn.addEventListener('click', () => {
+            currentQuestionIndexRRA++;
+            displayRapidRecallQuestion();
+            rraSubmitAnswerBtn.classList.remove('hidden');
+            rraNextQuestionBtn.classList.add('hidden');
+        });
+
+        rraEndGameBtn.addEventListener('click', () => {
+            endRapidRecallArenaGame();
+        });
+
+        function endRapidRecallArenaGame() {
+            const totalQuestions = rapidRecallArenaQuestions.length;
+            const gameTopic = rraGameTopic.textContent; // Get the topic from the display
+            recordGameResult("Rapid Recall Arena", totalQuestions, currentScoreRRA, gameTopic);
+
+            const isPerfect = currentScoreRRA === totalQuestions;
+            let winMessage = '';
+            if (isPerfect) {
+                winMessage = `<p class="text-green-600 font-bold text-2xl mb-4">You won this game on ${gameTopic}!</p>`;
+            }
+
+            const endGameModal = document.createElement('div');
+            endGameModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+            endGameModal.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 max-w-lg w-full text-center shadow-2xl animate-scaleIn">
+                    <h3 class="3xl font-bold text-gray-800 mb-4">Game Over!</h3>
+                    ${winMessage}
+                    <p class="text-xl text-gray-700 mb-6">Your final score is: <span class="font-semibold text-purple-700">${currentScoreRRA} out of ${totalQuestions}</span></p>
+                    <button id="end-game-modal-close-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transform hover:scale-105 transition duration-300">
+                        Back to Game Selection
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(endGameModal);
+
+            document.getElementById('end-game-modal-close-btn').addEventListener('click', () => {
+                document.body.removeChild(endGameModal);
+                showGameSelectionScreen();
+            });
+        }
+
+        // --- Concept Rocket Launch Game Logic (2D Drag-and-Drop) ---
+        function initConceptRocketLaunchGame() {
+            crlGameTopic.textContent = selectedTopic;
+            crlTotalPuzzles.textContent = conceptRocketLaunchPuzzles.length;
+            crlScore.textContent = currentScoreCRL;
+            crlFeedbackMessage.textContent = '';
+            crlSubmitOrderBtn.classList.remove('hidden');
+            crlNextPuzzleBtn.classList.add('hidden');
+            crlEndGameBtn.classList.add('hidden');
+            displayConceptRocketPuzzle();
+        }
+
+        function displayConceptRocketPuzzle() {
+            if (currentPuzzleIndexCRL < conceptRocketLaunchPuzzles.length) {
+                const puzzleData = conceptRocketLaunchPuzzles[currentPuzzleIndexCRL];
+                crlCurrentPuzzleNum.textContent = currentPuzzleIndexCRL + 1;
+                crlFeedbackMessage.textContent = '';
+                crlFeedbackMessage.className = 'mt-4 text-lg font-semibold';
+
+                // Shuffle the correct_order to present to the user
+                currentDisplayedBlocksCRL = shuffleArray([...puzzleData.correct_order]);
+                renderConceptRocketBlocks();
+
+                crlSubmitOrderBtn.classList.remove('hidden');
+                crlNextPuzzleBtn.classList.add('hidden');
+                crlEndGameBtn.classList.add('hidden');
+            } else {
+                endConceptRocketLaunchGame();
+            }
+        }
+
+        function renderConceptRocketBlocks() {
+            crlBlocksContainer.innerHTML = ''; // Clear existing blocks
+            currentDisplayedBlocksCRL.forEach((blockText, index) => {
+                const blockDiv = document.createElement('div');
+                blockDiv.className = 'crl-block-item';
+                blockDiv.setAttribute('draggable', 'true');
+                blockDiv.dataset.index = index; // Store original index for reordering logic
+                blockDiv.innerHTML = `
+                    <span class="icon">🚀</span> <!-- Placeholder icon -->
+                    <span class="text-content">${blockText}</span>
+                `;
+
+                blockDiv.addEventListener('dragstart', handleDragStart);
+                blockDiv.addEventListener('dragover', handleDragOver);
+                blockDiv.addEventListener('dragleave', handleDragLeave);
+                blockDiv.addEventListener('drop', handleDrop);
+                blockDiv.addEventListener('dragend', handleDragEnd);
+
+                crlBlocksContainer.appendChild(blockDiv);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedItem = e.target;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', draggedItem.innerHTML); // Required for Firefox
+            setTimeout(() => {
+                draggedItem.classList.add('dragging');
+            }, 0); // Add class after drag starts to hide original
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault(); // Necessary to allow drop
+            e.dataTransfer.dropEffect = 'move';
+            const targetItem = e.target.closest('.crl-block-item');
+            if (targetItem && targetItem !== draggedItem) {
+                // Remove drag-over from all others
+                Array.from(crlBlocksContainer.children).forEach(item => {
+                    item.classList.remove('drag-over');
+                });
+                // Add drag-over to the current target
+                targetItem.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dropTarget = e.target.closest('.crl-block-item');
+
+            if (dropTarget && draggedItem && dropTarget !== draggedItem) {
+                const draggedIndex = Array.from(crlBlocksContainer.children).indexOf(draggedItem);
+                const dropIndex = Array.from(crlBlocksContainer.children).indexOf(dropTarget);
+
+                // Reorder the currentDisplayedBlocksCRL array
+                const [movedBlockText] = currentDisplayedBlocksCRL.splice(draggedIndex, 1);
+                currentDisplayedBlocksCRL.splice(dropIndex, 0, movedBlockText);
+
+                renderConceptRocketBlocks(); // Re-render the blocks to reflect new order
+            }
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            Array.from(crlBlocksContainer.children).forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            draggedItem = null;
+        }
+
+
+        crlSubmitOrderBtn.addEventListener('click', () => {
+            const currentPuzzle = conceptRocketLaunchPuzzles[currentPuzzleIndexCRL];
+            const correctOrder = currentPuzzle.correct_order;
+
+            // The currentDisplayedBlocksCRL array directly reflects the user's order
+            const userOrder = currentDisplayedBlocksCRL;
+
+            const isCorrect = JSON.stringify(userOrder) === JSON.stringify(correctOrder);
+
+            if (isCorrect) {
+                crlFeedbackMessage.textContent = 'Order Correct! Rocket Launched! �';
+                crlFeedbackMessage.classList.remove('text-red-600');
+                crlFeedbackMessage.classList.add('text-green-600');
+                currentScoreCRL += 1;
+                crlScore.textContent = currentScoreCRL;
+                // Add correct-order class to all blocks
+                Array.from(crlBlocksContainer.children).forEach(blockDiv => {
+                    blockDiv.classList.add('correct-order');
+                });
+            } else {
+                crlFeedbackMessage.textContent = 'Incorrect Order. Rocket Failed. 💥';
+                crlFeedbackMessage.classList.remove('text-green-600');
+                crlFeedbackMessage.classList.add('text-red-600');
+                // Add incorrect-order class to all blocks
+                Array.from(crlBlocksContainer.children).forEach(blockDiv => {
+                    blockDiv.classList.add('incorrect-order');
+                });
+            }
+
+            // Disable drag/drop and buttons after submission
+            Array.from(crlBlocksContainer.children).forEach(blockDiv => {
+                blockDiv.setAttribute('draggable', 'false');
+                blockDiv.removeEventListener('dragstart', handleDragStart);
+                blockDiv.removeEventListener('dragover', handleDragOver);
+                blockDiv.removeEventListener('dragleave', handleDragLeave);
+                blockDiv.removeEventListener('drop', handleDrop);
+                blockDiv.removeEventListener('dragend', handleDragEnd);
+            });
+
+            crlSubmitOrderBtn.classList.add('hidden');
+            if (currentPuzzleIndexCRL < conceptRocketLaunchPuzzles.length - 1) {
+                crlNextPuzzleBtn.classList.remove('hidden');
+            } else {
+                crlEndGameBtn.classList.remove('hidden');
+            }
+        });
+
+        crlNextPuzzleBtn.addEventListener('click', () => {
+            currentPuzzleIndexCRL++;
+            displayConceptRocketPuzzle();
+            crlSubmitOrderBtn.classList.remove('hidden');
+            crlNextPuzzleBtn.classList.add('hidden');
+        });
+
+        crlEndGameBtn.addEventListener('click', () => {
+            endConceptRocketLaunchGame();
+        });
+
+        function endConceptRocketLaunchGame() {
+            const totalQuestions = conceptRocketLaunchPuzzles.length;
+            const gameTopic = crlGameTopic.textContent; // Get the topic from the display
+            recordGameResult("Concept Rocket Launch", totalQuestions, currentScoreCRL, gameTopic);
+
+            const isPerfect = currentScoreCRL === totalQuestions;
+            let winMessage = '';
+            if (isPerfect) {
+                winMessage = `<p class="text-green-600 font-bold text-2xl mb-4">You won this game on ${gameTopic}!</p>`;
+            }
+
+            crlBlocksContainer.innerHTML = ''; // Clear blocks
+            const endGameModal = document.createElement('div');
+            endGameModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+            endGameModal.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 max-w-lg w-full text-center shadow-2xl animate-scaleIn">
+                    <h3 class="3xl font-bold text-gray-800 mb-4">Game Over!</h3>
+                    ${winMessage}
+                    <p class="text-xl text-gray-700 mb-6">Your final score is: <span class="font-semibold text-purple-700">${currentScoreCRL} out of ${totalQuestions}</span></p>
+                    <button id="end-game-modal-close-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transform hover:scale-105 transition duration-300">
+                        Back to Game Selection
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(endGameModal);
+
+            document.getElementById('end-game-modal-close-btn').addEventListener('click', () => {
+                document.body.removeChild(endGameModal);
+                showGameSelectionScreen();
+            });
+        }
+
+
+        // --- Fix the Code Game Logic ---
+        function initFixTheCodeGame() {
+            ftcGameTopic.textContent = selectedTopic;
+            ftcTotalChallenges.textContent = fixTheCodeChallenges.length;
+            ftcScore.textContent = currentScoreFTC;
+            ftcAnswerInput.value = '';
+            ftcAnswerInput.disabled = false;
+            ftcFeedbackMessage.textContent = '';
+            ftcSubmitAnswerBtn.classList.remove('hidden');
+            ftcNextChallengeBtn.classList.add('hidden');
+            ftcEndGameBtn.classList.add('hidden');
+            displayFixTheCodeChallenge();
+        }
+
+        function displayFixTheCodeChallenge() {
+            if (currentChallengeIndexFTC < fixTheCodeChallenges.length) {
+                const challenge = fixTheCodeChallenges[currentChallengeIndexFTC];
+                ftcCurrentChallengeNum.textContent = currentChallengeIndexFTC + 1;
+                ftcDescription.textContent = challenge.description;
+
+                // Replace the placeholder with a visual indicator for the user
+                ftcCodeSnippet.textContent = challenge.code_snippet.replace('MISSING_LINE', '    // YOUR_CODE_HERE');
+                
+                ftcAnswerInput.value = ''; // Clear previous input
+                ftcAnswerInput.disabled = false;
+                ftcFeedbackMessage.textContent = '';
+                ftcFeedbackMessage.className = 'mt-4 text-lg font-semibold';
+                ftcSubmitAnswerBtn.classList.remove('hidden');
+                ftcNextChallengeBtn.classList.add('hidden');
+            } else {
+                endFixTheCodeGame();
+            }
+        }
+
+        ftcSubmitAnswerBtn.addEventListener('click', () => {
+            const userAnswer = ftcAnswerInput.value.trim();
+            const currentChallenge = fixTheCodeChallenges[currentChallengeIndexFTC];
+            const correctAnswer = currentChallenge.missing_line.trim();
+
+            // Compare user's answer with the correct missing line
+            if (userAnswer === correctAnswer) { // Exact match for code
+                ftcFeedbackMessage.textContent = 'Correct! Code fixed!';
+                ftcFeedbackMessage.classList.remove('text-red-600');
+                ftcFeedbackMessage.classList.add('text-green-600');
+                currentScoreFTC += 1;
+                ftcScore.textContent = currentScoreFTC;
+            } else {
+                ftcFeedbackMessage.textContent = `Incorrect. The correct line was: "${correctAnswer}"`;
+                ftcFeedbackMessage.classList.remove('text-green-600');
+                ftcFeedbackMessage.classList.add('text-red-600');
+            }
+
+            // Show the correct line in the code snippet after submission
+            ftcCodeSnippet.textContent = currentChallenge.code_snippet.replace('MISSING_LINE', correctAnswer);
+            ftcAnswerInput.disabled = true; // Disable input after submission
+            ftcSubmitAnswerBtn.classList.add('hidden');
+
+            if (currentChallengeIndexFTC < fixTheCodeChallenges.length - 1) {
+                ftcNextChallengeBtn.classList.remove('hidden');
+            } else {
+                ftcEndGameBtn.classList.remove('hidden');
+            }
+        });
+
+        ftcNextChallengeBtn.addEventListener('click', () => {
+            currentChallengeIndexFTC++;
+            displayFixTheCodeChallenge();
+        });
+
+        ftcEndGameBtn.addEventListener('click', () => {
+            endFixTheCodeGame();
+        });
+
+        function endFixTheCodeGame() {
+            const totalQuestions = fixTheCodeChallenges.length;
+            const gameTopic = ftcGameTopic.textContent; // Get the topic from the display
+            recordGameResult("Fix the Code", totalQuestions, currentScoreFTC, gameTopic);
+
+            const isPerfect = currentScoreFTC === totalQuestions;
+            let winMessage = '';
+            if (isPerfect) {
+                winMessage = `<p class="text-green-600 font-bold text-2xl mb-4">You won this game on ${gameTopic}!</p>`;
+            }
+
+            const endGameModal = document.createElement('div');
+            endGameModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+            endGameModal.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 max-w-lg w-full text-center shadow-2xl animate-scaleIn">
+                    <h3 class="3xl font-bold text-gray-800 mb-4">Game Over!</h3>
+                    ${winMessage}
+                    <p class="text-xl text-gray-700 mb-6">Your final score is: <span class="font-semibold text-purple-700">${currentScoreFTC} out of ${totalQuestions}</span></p>
+                    <button id="end-game-modal-close-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transform hover:scale-105 transition duration-300">
+                        Back to Game Selection
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(endGameModal);
+
+            document.getElementById('end-game-modal-close-btn').addEventListener('click', () => {
+                document.body.removeChild(endGameModal);
+                showGameSelectionScreen();
+            });
+        }
+
+        // --- Block Identifier Game Logic ---
+        function initBlockIdentifierGame() {
+            ffGameTopic.textContent = selectedTopic;
+            ffTotalChallenges.textContent = blockIdentifierChallenges.length; // Now correctly reflects 3
+            ffScore.textContent = currentScoreFF;
+            ffFeedbackMessage.textContent = '';
+            ffSubmitAnswerBtn.classList.remove('hidden');
+            ffNextChallengeBtn.classList.add('hidden');
+            ffEndGameBtn.classList.add('hidden');
+            displayBlockIdentifierChallenge();
+        }
+
+        function displayBlockIdentifierChallenge() {
+            const currentIndex = currentChallengeIndexFF;
+
+            if (currentIndex < blockIdentifierChallenges.length) {
+                const challenge = blockIdentifierChallenges[currentIndex];
+                ffCurrentChallengeNum.textContent = currentIndex + 1;
+                ffDescription.textContent = challenge.description;
+                flowchartFixerContainer.innerHTML = ''; // Clear previous items
+                const loadingSpinner = flowchartFixerLoadingSpinner;
+                loadingSpinner.classList.remove('hidden'); // Show loading spinner
+
+                const orderedSequence = [...challenge.correct_sequence];
+                
+                renderBlockIdentifierBlocks(flowchartFixerContainer, orderedSequence); // Render the blocks
+                loadingSpinner.classList.add('hidden'); // Hide loading spinner
+
+                ffFeedbackMessage.textContent = '';
+                ffFeedbackMessage.className = 'mt-4 text-lg font-semibold';
+                ffSubmitAnswerBtn.classList.remove('hidden');
+                ffNextChallengeBtn.classList.add('hidden');
+            } else {
+                endBlockIdentifierGame();
+            }
+        }
+
+        // Render blocks with text content directly inside
+        function renderBlockIdentifierBlocks(container, blocksToRender) {
+            container.innerHTML = ''; // Clear existing blocks
+
+            blocksToRender.forEach((item, index) => {
+                const blockDiv = document.createElement('div');
+                blockDiv.className = 'flowchart-item';
+                blockDiv.dataset.originalConcept = item.concept; // Store correct concept for later validation
+                blockDiv.dataset.isMissingBlock = item.is_missing_block; // Store missing flag
+                blockDiv.dataset.index = index; // Store current index for reference
+
+                if (item.is_missing_block) {
+                    const inputField = document.createElement('input');
+                    inputField.type = 'text';
+                    inputField.className = 'flowchart-input';
+                    inputField.placeholder = 'Type missing concept here';
+                    inputField.value = ''; // Ensure it's empty for user input
+                    inputField.disabled = false; // Enable for typing
+                    blockDiv.appendChild(inputField);
+                } else {
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'block-content'; // Apply a class for centering/styling content
+                    contentDiv.textContent = item.concept; // Display the concept directly
+                    blockDiv.appendChild(contentDiv);
+                }
+
+                container.appendChild(blockDiv);
+            });
+        }
+
+        // Specific Submit Logic for Block Identifier
+        ffSubmitAnswerBtn.addEventListener('click', () => {
+            const currentIndex = currentChallengeIndexFF;
+            const currentChallenge = blockIdentifierChallenges[currentIndex];
+            const correctSequence = currentChallenge.correct_sequence;
+            
+            let isMissingBlockContentCorrect = false;
+            let missingBlockFound = false;
+            let missingBlockIndex = -1; // To store the index of the missing block
+
+            // Find the missing block and its correct answer
+            for (let i = 0; i < correctSequence.length; i++) {
+                const block = correctSequence[i];
+                if (block.is_missing_block) {
+                    missingBlockFound = true;
+                    missingBlockIndex = i;
+                    const inputElement = flowchartFixerContainer.querySelector(`[data-index="${i}"] .flowchart-input`);
+                    const userAnswer = (inputElement ? inputElement.value.trim() : '').toLowerCase();
+                    const correctAnswer = block.concept.toLowerCase().trim();
+                    
+                    if (userAnswer === correctAnswer) {
+                        isMissingBlockContentCorrect = true;
+                    }
+
+                    // Always show the correct answer in the input field after submission
+                    if (inputElement) {
+                        inputElement.value = block.concept; // Set to original correct case
+                        inputElement.disabled = true; // Disable after showing answer
+                    }
+                    break; // Only one missing block
+                }
+            }
+
+            if (!missingBlockFound) {
+                ffFeedbackMessage.textContent = 'Error: No missing block found in the puzzle data.';
+                ffFeedbackMessage.classList.remove('text-green-600');
+                ffFeedbackMessage.classList.add('text-red-600');
+                return;
+            }
+
+            if (isMissingBlockContentCorrect) {
+                ffFeedbackMessage.textContent = 'Correct! Block identified!';
+                ffFeedbackMessage.classList.remove('text-red-600');
+                ffFeedbackMessage.classList.add('text-green-600');
+                currentScoreFF += 1;
+                ffScore.textContent = currentScoreFF;
+                // Add correct-order class to all blocks
+                Array.from(flowchartFixerContainer.children).forEach(blockDiv => {
+                    blockDiv.classList.add('correct-order');
+                });
+            } else {
+                ffFeedbackMessage.textContent = `Incorrect. The correct answer was: "${correctSequence[missingBlockIndex].concept}"`;
+                ffFeedbackMessage.classList.remove('text-green-600');
+                ffFeedbackMessage.classList.add('text-red-600');
+                // Add incorrect-order class to all blocks
+                Array.from(flowchartFixerContainer.children).forEach(blockDiv => {
+                    blockDiv.classList.add('incorrect-order');
+                });
+            }
+
+            ffSubmitAnswerBtn.classList.add('hidden');
+            const nextIndex = currentIndex + 1;
+            if (nextIndex < blockIdentifierChallenges.length) {
+                ffNextChallengeBtn.classList.remove('hidden');
+            } else {
+                ffEndGameBtn.classList.remove('hidden');
+            }
+        });
+
+        ffNextChallengeBtn.addEventListener('click', () => {
+            currentChallengeIndexFF++;
+            displayBlockIdentifierChallenge(); // Call without arguments, it uses global state
+        });
+
+        ffEndGameBtn.addEventListener('click', () => {
+            endBlockIdentifierGame();
+        });
+
+        function endBlockIdentifierGame() {
+            const totalQuestions = blockIdentifierChallenges.length;
+            const gameTopic = ffGameTopic.textContent; // Get the topic from the display
+            recordGameResult("Block Identifier", totalQuestions, currentScoreFF, gameTopic);
+
+            const isPerfect = currentScoreFF === totalQuestions;
+            let winMessage = '';
+            if (isPerfect) {
+                winMessage = `<p class="text-green-600 font-bold text-2xl mb-4">You won this game on ${gameTopic}!</p>`;
+            }
+
+            const endGameModal = document.createElement('div');
+            endGameModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+            endGameModal.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 max-w-lg w-full text-center shadow-2xl animate-scaleIn">
+                    <h3 class="3xl font-bold text-gray-800 mb-4">Game Over!</h3>
+                    ${winMessage}
+                    <p class="text-xl text-gray-700 mb-6">Your final score is: <span class="font-semibold text-purple-700">${currentScoreFF} out of ${totalQuestions}</span></p>
+                    <button id="end-game-modal-close-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transform hover:scale-105 transition duration-300">
+                        Back to Game Selection
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(endGameModal);
+
+            document.getElementById('end-game-modal-close-btn').addEventListener('click', () => {
+                document.body.removeChild(endGameModal);
+                showGameSelectionScreen();
+            });
+        }
+
+        // --- Spin and Solve Game Logic ---
+        const ctx = wheelCanvas.getContext('2d');
+        const wheelRadius = wheelCanvas.width / 2;
+        const centerX = wheelCanvas.width / 2;
+        const centerY = wheelCanvas.height / 2;
+        const segmentColors = ['#FFD700', '#FF6347', '#6A5ACD', '#3CB371', '#FF8C00']; // Gold, Tomato, SlateBlue, MediumSeaGreen, DarkOrange
+
+        function drawWheel() {
+            ctx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+            const arcSize = 2 * Math.PI / spinWheelTopics.length;
+
+            for (let i = 0; i < spinWheelTopics.length; i++) {
+                const angle = i * arcSize;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, wheelRadius, angle, angle + arcSize);
+                ctx.lineTo(centerX, centerY);
+                ctx.closePath();
+                ctx.fillStyle = segmentColors[i % segmentColors.length];
+                ctx.fill();
+                ctx.stroke();
+
+                // Draw text
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(angle + arcSize / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 14px Roboto'; /* Changed font to Roboto */
+                ctx.fillText(spinWheelTopics[i], wheelRadius - 10, 0);
+                ctx.restore();
+            }
+
+            // Draw center circle (pointer base)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
+            ctx.fillStyle = '#6d28d9'; // purple-700
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw pointer
+            ctx.beginPath();
+            ctx.moveTo(centerX + wheelRadius + 10, centerY);
+            ctx.lineTo(centerX + wheelRadius - 20, centerY - 10);
+            ctx.lineTo(centerX + wheelRadius - 20, centerY + 10);
+            ctx.closePath();
+            ctx.fillStyle = '#dc2626'; // red-600
+            ctx.fill();
+        }
+
+        let currentRotation = 0;
+        let animationId = null;
+        let targetRotation = 0;
+        let spinDuration = 0;
+        let startTime = null;
+
+        function animateSpin(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / spinDuration, 1);
+            const easedProgress = 1 - Math.pow(1 - progress, 3); // Ease-out cubic
+
+            currentRotation = targetRotation * easedProgress;
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(currentRotation);
+            ctx.translate(-centerX, -centerY);
+            drawWheel(); // Redraw the wheel
+            ctx.restore();
+
+            if (progress < 1) {
+                animationId = requestAnimationFrame(animateSpin);
+            } else {
+                isSpinning = false;
+                spinBtn.disabled = false;
+                determineSpunTopic();
+            }
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+            spinBtn.disabled = true;
+            sasSpunTopicDisplay.textContent = 'Spinning...';
+            sasSpunTopicDisplay.classList.remove('text-green-600', 'text-red-600');
+
+            // Randomize spin duration (e.g., 3 to 6 seconds)
+            spinDuration = Math.random() * 3000 + 3000; // 3000ms to 6000ms
+
+            // Calculate a random target rotation
+            // Ensure it spins multiple times (e.g., at least 3 full rotations)
+            // Plus a random offset to land on a segment
+            const minRotations = 3;
+            const extraRotation = Math.random() * (2 * Math.PI); // Random angle within one full rotation
+            targetRotation = minRotations * (2 * Math.PI) + extraRotation;
+
+            startTime = null;
+            animationId = requestAnimationFrame(animateSpin);
+        }
+
+        function determineSpunTopic() {
+            // Normalize the final rotation angle to be within 0 to 2 * PI (one full circle)
+            const finalAngle = (currentRotation % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+
+            // Calculate the angular size of each segment
+            const arcSize = 2 * Math.PI / spinWheelTopics.length;
+
+            // The pointer is at 0 radians (right side).
+            // The wheel rotates clockwise.
+            // The angle on the *wheel* that is currently at the pointer's position (0 radians) is `(2 * Math.PI - finalAngle) % (2 * Math.PI)`.
+            const angleUnderPointer = (2 * Math.PI - finalAngle) % (2 * Math.PI);
+
+            // Determine the index of the segment that contains this angle.
+            // Segments are indexed 0, 1, 2... from 0 to arcSize, arcSize to 2*arcSize, etc.
+            const spunTopicIndex = Math.floor(angleUnderPointer / arcSize);
+
+            // Ensure the index is within bounds, as floating point math can sometimes cause issues
+            const safeSpunTopicIndex = Math.min(Math.max(0, spunTopicIndex), spinWheelTopics.length - 1);
+
+            const spunTopic = spinWheelTopics[safeSpunTopicIndex];
+            console.log("Determined spun topic:", spunTopic); // DEBUG LOG
+            
+            sasSpunTopicDisplay.textContent = `You landed on: ${spunTopic}!`;
+            sasSpunTopicDisplay.classList.add('text-green-600');
+
+            // Fetch questions for the spun topic
+            fetchSpinAndSolveQuestions(spunTopic);
+        }
+
+        spinBtn.addEventListener('click', spinWheel);
+
+
+        function initSpinAndSolveGame() {
+            sasGameTopic.textContent = 'Spin to start!';
+            sasSpunTopicDisplay.textContent = '';
+            sasScore.textContent = 0;
+            currentScoreSAS = 0;
+            currentQuestionIndexSAS = 0;
+            currentQuestionTypeSAS = 'mcq';
+            spinAndSolveContent = null; // Clear previous content
+            
+            sasSpinPhase.classList.remove('hidden');
+            sasQuestionPhase.classList.add('hidden');
+            sasMcqSection.classList.add('hidden');
+            sasRiddleSection.classList.add('hidden');
+            sasSubmitAnswerBtn.classList.add('hidden');
+            sasNextQuestionBtn.classList.add('hidden');
+            sasEndGameBtn.classList.add('hidden');
+            spinBtn.disabled = false;
+            isSpinning = false;
+
+            drawWheel(); // Initial draw of the wheel
+        }
+
+        async function fetchSpinAndSolveQuestions(topic) {
+            console.log("Sending topic to backend for Spin and Solve:", topic); // NEW DEBUG LOG
+            gameLoadingIndicator.classList.remove('hidden');
+            gameErrorMessage.classList.add('hidden');
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/generate_game_content', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ game_type: "Spin and Solve", topic: topic })
+                });
+                const data = await response.json();
+
+                if (data.success && data.content && data.content.mcqs && data.content.riddles) {
+                    console.log("Successfully fetched Spin and Solve content:", data.content); // DEBUG LOG
+                    spinAndSolveContent = data.content;
+                    sasGameTopic.textContent = topic;
+                    sasMcqTotalNum.textContent = spinAndSolveContent.mcqs.length;
+                    sasRiddleTotalNum.textContent = spinAndSolveContent.riddles.length;
+                    
+                    sasSpinPhase.classList.add('hidden');
+                    sasQuestionPhase.classList.remove('hidden');
+                    sasMcqSection.classList.remove('hidden');
+                    sasRiddleSection.classList.add('hidden'); // Start with MCQ section visible
+                    sasSubmitAnswerBtn.classList.remove('hidden');
+                    sasNextQuestionBtn.classList.add('hidden');
+                    sasEndGameBtn.classList.add('hidden');
+
+                    displaySASQuestion();
+                } else {
+                    console.error("Failed to fetch Spin and Solve content. Backend message:", data.message); // DEBUG LOG
+                    displayMessage(gameErrorMessage, data.message || 'Failed to generate Spin and Solve questions. Please try another topic.', false);
+                    sasSpinPhase.classList.remove('hidden'); // Go back to spin phase
+                    sasQuestionPhase.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error fetching Spin and Solve content:', error); // DEBUG LOG
+                displayMessage(gameErrorMessage, 'Network error or backend issue during question generation. Try again.', false);
+                sasSpinPhase.classList.remove('hidden'); // Go back to spin phase
+                sasQuestionPhase.classList.add('hidden');
+            } finally {
+                gameLoadingIndicator.classList.add('hidden');
+            }
+        }
+
+        function displaySASQuestion() {
+            sasMcqFeedback.textContent = '';
+            sasRiddleFeedback.textContent = '';
+            sasSubmitAnswerBtn.classList.remove('hidden');
+            sasNextQuestionBtn.classList.add('hidden');
+
+            if (currentQuestionTypeSAS === 'mcq') {
+                sasMcqSection.classList.remove('hidden');
+                sasRiddleSection.classList.add('hidden');
+                if (currentQuestionIndexSAS < spinAndSolveContent.mcqs.length) {
+                    const mcq = spinAndSolveContent.mcqs[currentQuestionIndexSAS];
+                    sasMcqCurrentNum.textContent = currentQuestionIndexSAS + 1;
+                    sasMcqQuestion.textContent = mcq.question;
+                    sasMcqOptionsContainer.innerHTML = '';
+                    selectedOptionSAS = null; // Reset selection
+
+                    Object.keys(mcq.options).forEach(key => {
+                        const optionDiv = document.createElement('label');
+                        optionDiv.className = 'mcq-option-item';
+                        optionDiv.innerHTML = `
+                            <input type="radio" name="mcq_option" value="${key}" class="mr-2">
+                            <span>${key}: ${mcq.options[key]}</span>
+                        `;
+                        optionDiv.addEventListener('click', () => {
+                            // Visually select the option
+                            Array.from(sasMcqOptionsContainer.children).forEach(o => o.classList.remove('selected'));
+                            optionDiv.classList.add('selected');
+                            selectedOptionSAS = key; // Update selected option
+                            sasMcqFeedback.textContent = ''; // Clear feedback on new selection
+                        });
+                        sasMcqOptionsContainer.appendChild(optionDiv);
+                    });
+                } else {
+                    // All MCQs done, switch to riddles
+                    currentQuestionTypeSAS = 'riddle';
+                    currentQuestionIndexSAS = 0; // Reset index for riddles
+                    displaySASQuestion();
+                }
+            } else if (currentQuestionTypeSAS === 'riddle') {
+                sasMcqSection.classList.add('hidden');
+                sasRiddleSection.classList.remove('hidden');
+                if (currentQuestionIndexSAS < spinAndSolveContent.riddles.length) {
+                    const riddle = spinAndSolveContent.riddles[currentQuestionIndexSAS];
+                    sasRiddleCurrentNum.textContent = currentQuestionIndexSAS + 1;
+                    sasRiddleQuestion.textContent = riddle.riddle;
+                    sasRiddleAnswerInput.value = '';
+                    sasRiddleAnswerInput.disabled = false;
+                } else {
+                    // All riddles done, end game
+                    endSpinAndSolveGame();
+                }
+            }
+        }
+
+        sasSubmitAnswerBtn.addEventListener('click', () => {
+            if (currentQuestionTypeSAS === 'mcq') {
+                if (!selectedOptionSAS) {
+                    sasMcqFeedback.textContent = 'Please select an option!';
+                    sasMcqFeedback.classList.remove('text-green-600');
+                    sasMcqFeedback.classList.add('text-red-600');
+                    return;
+                }
+                const currentMcq = spinAndSolveContent.mcqs[currentQuestionIndexSAS];
+                const isCorrect = (selectedOptionSAS === currentMcq.correct_answer);
+
+                // Disable options and show correct/incorrect
+                Array.from(sasMcqOptionsContainer.children).forEach(optionDiv => {
+                    optionDiv.style.pointerEvents = 'none'; // Disable clicks
+                    const radioInput = optionDiv.querySelector('input[type="radio"]');
+                    if (radioInput) radioInput.disabled = true;
+
+                    if (optionDiv.querySelector('input').value === currentMcq.correct_answer) {
+                        optionDiv.classList.add('correct');
+                    } else if (optionDiv.classList.contains('selected')) {
+                        optionDiv.classList.add('incorrect');
+                    }
+                });
+
+                if (isCorrect) {
+                    sasMcqFeedback.textContent = 'Correct!';
+                    sasMcqFeedback.classList.remove('text-red-600');
+                    sasMcqFeedback.classList.add('text-green-600');
+                    currentScoreSAS += 1;
+                } else {
+                    sasMcqFeedback.textContent = `Incorrect. Correct answer was: ${currentMcq.correct_answer}: ${currentMcq.options[currentMcq.correct_answer]}`;
+                    sasMcqFeedback.classList.remove('text-green-600');
+                    sasMcqFeedback.classList.add('text-red-600');
+                }
+            } else if (currentQuestionTypeSAS === 'riddle') {
+                const userAnswer = sasRiddleAnswerInput.value.trim().toLowerCase();
+                const currentRiddle = spinAndSolveContent.riddles[currentQuestionIndexSAS];
+                const correctAnswer = currentRiddle.answer.trim().toLowerCase();
+                const isCorrect = (userAnswer === correctAnswer);
+
+                sasRiddleAnswerInput.disabled = true; // Disable input
+                sasRiddleAnswerInput.value = currentRiddle.answer; // Reveal correct answer
+
+                if (isCorrect) {
+                    sasRiddleFeedback.textContent = 'Correct!';
+                    sasRiddleFeedback.classList.remove('text-red-600');
+                    sasRiddleFeedback.classList.add('text-green-600');
+                    currentScoreSAS += 1;
+                } else {
+                    sasRiddleFeedback.textContent = `Incorrect. The answer was: ${currentRiddle.answer}`;
+                    sasRiddleFeedback.classList.remove('text-green-600');
+                    sasRiddleFeedback.classList.add('text-red-600');
+                }
+            }
+            sasScore.textContent = currentScoreSAS;
+            sasSubmitAnswerBtn.classList.add('hidden');
+            sasNextQuestionBtn.classList.remove('hidden');
+        });
+
+        sasNextQuestionBtn.addEventListener('click', () => {
+            currentQuestionIndexSAS++;
+            displaySASQuestion();
+        });
+
+        sasEndGameBtn.addEventListener('click', () => {
+            endSpinAndSolveGame();
+        });
+
+        function endSpinAndSolveGame() {
+            const totalQuestions = spinAndSolveContent.mcqs.length + spinAndSolveContent.riddles.length;
+            const gameTopic = sasGameTopic.textContent; // Get the topic from the display
+            recordGameResult("Spin and Solve", totalQuestions, currentScoreSAS, gameTopic);
+
+            const isPerfect = currentScoreSAS === totalQuestions;
+            let winMessage = '';
+            if (isPerfect) {
+                winMessage = `<p class="text-green-600 font-bold text-2xl mb-4">You won this game on ${gameTopic}!</p>`;
+            }
+
+            const endGameModal = document.createElement('div');
+            endGameModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+            endGameModal.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 max-w-lg w-full text-center shadow-2xl animate-scaleIn">
+                    <h3 class="3xl font-bold text-gray-800 mb-4">Game Over!</h3>
+                    ${winMessage}
+                    <p class="text-xl text-gray-700 mb-6">Your final score is: <span class="font-semibold text-purple-700">${currentScoreSAS} out of ${totalQuestions}</span></p>
+                    <button id="end-game-modal-close-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transform hover:scale-105 transition duration-300">
+                        Back to Game Selection
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(endGameModal);
+
+            document.getElementById('end-game-modal-close-btn').addEventListener('click', () => {
+                document.body.removeChild(endGameModal);
+                showGameSelectionScreen();
+            });
+        }
+
+        // --- Boss Fight Game Logic ---
+        function initBossFightGame() {
+            bfGameTopic.textContent = "Advanced DSA Concepts"; // Fixed topic for Boss Fight
+            bfTotalQuestions.textContent = bossFightQuestions.length; // Should be 10
+            bfScore.textContent = currentScoreBF;
+            bfFeedbackMessage.textContent = '';
+            bfSubmitAnswerBtn.classList.remove('hidden');
+            bfNextQuestionBtn.classList.add('hidden');
+            bfEndGameBtn.classList.add('hidden');
+            displayBossFightQuestion();
+        }
+
+        function displayBossFightQuestion() {
+            if (currentQuestionIndexBF < bossFightQuestions.length) {
+                const questionData = bossFightQuestions[currentQuestionIndexBF];
+                bfCurrentQuestionNum.textContent = currentQuestionIndexBF + 1;
+                bfQuestion.textContent = questionData.question;
+                bfOptionsContainer.innerHTML = ''; // Clear previous options
+                bfFeedbackMessage.textContent = '';
+                bfFeedbackMessage.className = 'mt-4 text-lg font-semibold'; // Reset class
+                selectedOptionBF = null; // Reset selected option for new question
+
+                // Create option divs with icon and checkmark
+                const optionKeys = ['A', 'B', 'C', 'D'];
+                Object.keys(questionData.options || {}).forEach(key => { // Iterate over actual options to avoid issues if less than 4
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = `rra-option-item`; // Reusing RRA style
+                    optionDiv.dataset.optionKey = key; // Store the option key
+                    optionDiv.innerHTML = `
+                        <span class="option-icon">●</span> <!-- Placeholder icon (circle) -->
+                        <span class="option-text">${key}: ${questionData.options[key]}</span>
+                        <svg class="checkmark-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    `;
+                    optionDiv.addEventListener('click', () => selectBossFightOption(optionDiv, key));
+                    bfOptionsContainer.appendChild(optionDiv);
+                });
+
+                // Handle riddles for Boss Fight
+                if (questionData.type === 'riddle') {
+                    bfOptionsContainer.innerHTML = `
+                        <input
+                            type="text"
+                            id="bf-riddle-answer-input"
+                            placeholder="Your Answer"
+                            class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 text-center"
+                            autocomplete="off"
+                        />
+                    `;
+                    // Attach event listener for riddle input if needed, or handle on submit
+                }
+
+                bfSubmitAnswerBtn.classList.remove('hidden');
+                bfNextQuestionBtn.classList.add('hidden');
+            } else {
+                endBossFightGame();
+            }
+        }
+
+        function selectBossFightOption(selectedDiv, key) {
+            // Remove selection from all options first
+            Array.from(bfOptionsContainer.children).forEach(div => {
+                div.classList.remove('selected');
+            });
+            // Add selection to the clicked div
+            selectedDiv.classList.add('selected');
+            selectedOptionBF = key;
+            bfFeedbackMessage.textContent = ''; // Clear feedback on new selection
+        }
+
+        bfSubmitAnswerBtn.addEventListener('click', () => {
+            const currentQuestion = bossFightQuestions[currentQuestionIndexBF];
+            let isCorrect = false;
+
+            if (currentQuestion.type === 'mcq') {
+                if (!selectedOptionBF) {
+                    bfFeedbackMessage.textContent = 'Please select an option!';
+                    bfFeedbackMessage.classList.remove('text-green-600');
+                    bfFeedbackMessage.classList.add('text-red-600');
+                    return;
+                }
+                const correctAnswer = currentQuestion.correct_answer;
+                isCorrect = (selectedOptionBF === correctAnswer);
+
+                // Disable all options and highlight correct/incorrect
+                Array.from(bfOptionsContainer.children).forEach(div => {
+                    div.style.pointerEvents = 'none'; // Disable further clicks
+                    const key = div.dataset.optionKey;
+                    if (key === correctAnswer) {
+                        div.classList.add('correct');
+                    } else if (key === selectedOptionBF) {
+                        div.classList.add('incorrect');
+                    }
+                });
+                if (!isCorrect) {
+                     bfFeedbackMessage.textContent = `Incorrect. The correct answer was: ${currentQuestion.options[correctAnswer]}`;
+                }
+
+            } else if (currentQuestion.type === 'riddle') {
+                const riddleInput = document.getElementById('bf-riddle-answer-input');
+                const userAnswer = riddleInput.value.trim().toLowerCase();
+                const correctAnswer = currentQuestion.answer.trim().toLowerCase();
+                isCorrect = (userAnswer === correctAnswer);
+                riddleInput.disabled = true; // Disable input
+                riddleInput.value = currentQuestion.answer; // Reveal correct answer
+                if (!isCorrect) {
+                    bfFeedbackMessage.textContent = `Incorrect. The answer was: ${currentQuestion.answer}`;
+                }
+            }
+            
+            if (isCorrect) {
+                bfFeedbackMessage.textContent = 'Correct!';
+                bfFeedbackMessage.classList.remove('text-red-600');
+                bfFeedbackMessage.classList.add('text-green-600');
+                currentScoreBF += 1;
+            } else {
+                bfFeedbackMessage.classList.remove('text-green-600');
+                bfFeedbackMessage.classList.add('text-red-600');
+            }
+
+            bfSubmitAnswerBtn.classList.add('hidden');
+            if (currentQuestionIndexBF < bossFightQuestions.length - 1) {
+                bfNextQuestionBtn.classList.remove('hidden');
+            } else {
+                bfEndGameBtn.classList.remove('hidden');
+            }
+        });
+
+        bfNextQuestionBtn.addEventListener('click', () => {
+            currentQuestionIndexBF++;
+            displayBossFightQuestion();
+            bfSubmitAnswerBtn.classList.remove('hidden');
+            bfNextQuestionBtn.classList.add('hidden');
+        });
+
+        bfEndGameBtn.addEventListener('click', () => {
+            endBossFightGame();
+        });
+
+        function endBossFightGame() {
+            const totalQuestions = bossFightQuestions.length;
+            const gameTopic = bfGameTopic.textContent; // Get the topic from the display
+            recordGameResult("Boss Fight", totalQuestions, currentScoreBF, gameTopic);
+
+            const isPerfect = currentScoreBF === totalQuestions;
+            let winMessage = '';
+            if (isPerfect) {
+                winMessage = `<p class="text-green-600 font-bold text-2xl mb-4">You conquered the Boss Fight on ${gameTopic}!</p>`;
+            } else {
+                winMessage = `<p class="text-red-600 font-bold text-2xl mb-4">You fought hard in the Boss Fight on ${gameTopic}!</p>`;
+            }
+
+            const endGameModal = document.createElement('div');
+            endGameModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50';
+            endGameModal.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 max-w-lg w-full text-center shadow-2xl animate-scaleIn">
+                    <h3 class="3xl font-bold text-gray-800 mb-4">Game Over!</h3>
+                    ${winMessage}
+                    <p class="text-xl text-gray-700 mb-6">Your final score is: <span class="font-semibold text-purple-700">${currentScoreBF} out of ${totalQuestions}</span></p>
+                    <button id="end-game-modal-close-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transform hover:scale-105 transition duration-300">
+                        Back to Game Selection
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(endGameModal);
+
+            document.getElementById('end-game-modal-close-btn').addEventListener('click', () => {
+                document.body.removeChild(endGameModal);
+                showGameSelectionScreen();
+            });
+        }
+
+
+        // --- Rewards History Screen Logic ---
+
+        // Show rewards and history screen
+        viewRewardsBtn.addEventListener('click', () => { // Linked the button
+            showRewardsHistoryScreen();
+        });
+
+        function showRewardsHistoryScreen() {
+            progressUsername.textContent = loggedInUsername;
+            renderFullHistoryTable(); // This is the full history
+            renderRewardsGrid();
+            showWindow(rewardsHistoryWindow);
+        }
+
+        // Render full history table dynamically (for Rewards & History window)
+        function renderFullHistoryTable() { // Renamed from renderHistoryTable to avoid confusion
+            historyTableContainer.innerHTML = ''; // Clear existing table
+            // Fetch history from backend
+            fetch(`http://127.0.0.1:5000/get_user_history?username=${loggedInUsername}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.history.length > 0) {
+                        noHistoryMessage.classList.add('hidden');
+                        const table = document.createElement('table');
+                        table.className = 'min-w-full bg-white rounded-xl shadow-md';
+                        table.innerHTML = `
+                            <thead>
+                                <tr class="bg-blue-100 text-blue-800 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left rounded-tl-xl">Game</th>
+                                    <th class="py-3 px-6 text-left">Topic</th>
+                                    <th class="py-3 px-6 text-left">Score</th>
+                                    <th class="py-3 px-6 text-left rounded-tr-xl">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-700 text-sm font-light" id="history-table-body">
+                            </tbody>
+                        `;
+                        historyTableContainer.appendChild(table);
+                        const tbody = document.getElementById('history-table-body');
+                        data.history.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.className = 'border-b border-gray-200 hover:bg-gray-50';
+                            const isPerfect = item.correct_answers === item.total_questions;
+                            row.innerHTML = `
+                                <td class="py-3 px-6 text-left whitespace-nowrap">${item.game_type}</td>
+                                <td class="py-3 px-6 text-left whitespace-nowrap">${item.topic || 'N/A'}</td>
+                                <td class="py-3 px-6 text-left">
+                                    ${item.correct_answers} / ${item.total_questions}
+                                    ${isPerfect ? '<span class="perfect-score-indicator">⭐ Perfect!</span>' : ''}
+                                </td>
+                                <td class="py-3 px-6 text-left">${new Date(item.timestamp * 1000).toLocaleDateString()}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    } else {
+                        noHistoryMessage.classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user history:', error);
+                    noHistoryMessage.classList.remove('hidden');
+                    noHistoryMessage.textContent = 'Failed to load history.';
+                });
+        }
+
+        // Render recent game history on the Game Selection window
+        async function renderRecentGameHistory() {
+            recentHistoryTableContainer.innerHTML = ''; // Clear existing table
+            if (!loggedInUsername) {
+                noRecentHistoryMessage.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/get_user_history?username=${loggedInUsername}`);
+                const data = await response.json();
+
+                if (data.success && data.history.length > 0) {
+                    noRecentHistoryMessage.classList.add('hidden');
+                    // Sort history by timestamp in descending order and take the latest 5
+                    const recentHistory = data.history.sort((a, b) => b.timestamp - a.timestamp).slice(0, 5);
+
+                    const table = document.createElement('table');
+                    table.className = 'min-w-full bg-white rounded-xl shadow-md';
+                    table.innerHTML = `
+                        <thead>
+                            <tr class="bg-blue-100 text-blue-800 uppercase text-sm leading-normal">
+                                <th class="py-2 px-4 text-left rounded-tl-xl">Game</th>
+                                <th class="py-2 px-4 text-left">Topic</th>
+                                <th class="py-2 px-4 text-left">Score</th>
+                                <th class="py-2 px-4 text-left rounded-tr-xl">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 text-sm font-light" id="recent-history-table-body">
+                        </tbody>
+                    `;
+                    recentHistoryTableContainer.appendChild(table);
+                    const tbody = document.getElementById('recent-history-table-body');
+                    recentHistory.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-gray-200 hover:bg-gray-50';
+                        const isPerfect = item.correct_answers === item.total_questions;
+                        row.innerHTML = `
+                            <td class="py-2 px-4 text-left whitespace-nowrap">${item.game_type}</td>
+                            <td class="py-2 px-4 text-left whitespace-nowrap">${item.topic || 'N/A'}</td>
+                            <td class="py-2 px-4 text-left">
+                                ${item.correct_answers} / ${item.total_questions}
+                                ${isPerfect ? '<span class="perfect-score-indicator">⭐</span>' : ''}
+                            </td>
+                            <td class="py-2 px-4 text-left">${new Date(item.timestamp * 1000).toLocaleDateString()}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    noRecentHistoryMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error fetching recent user history:', error);
+                noRecentHistoryMessage.classList.remove('hidden');
+                noRecentHistoryMessage.textContent = 'Failed to load recent history.';
+            }
+        }
+
+
+        // Render rewards grid dynamically
+        async function renderRewardsGrid() {
+            rewardsGridContainer.innerHTML = ''; // Clear existing rewards
+            if (!loggedInUsername) {
+                noRewardsMessage.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/get_user_perfect_wins?username=${loggedInUsername}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const perfectWins = data.perfect_wins;
+                    let rewardHtml = '';
+
+                    if (perfectWins >= 1) {
+                        rewardHtml += `
+                            <div class="bg-white p-4 rounded-xl shadow-md flex items-center space-x-4">
+                                <span class="reward-coin">🥉</span>
+                                <div>
+                                    <h4 class="lg font-semibold text-gray-800">Bronze Coin</h4>
+                                    <p class="text-gray-600 text-sm">Achieved 1 perfect game!</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    if (perfectWins >= 2) {
+                        rewardHtml += `
+                            <div class="bg-white p-4 rounded-xl shadow-md flex items-center space-x-4">
+                                <span class="reward-coin">🥈</span>
+                                <div>
+                                    <h4 class="lg font-semibold text-gray-800">Silver Coin</h4>
+                                    <p class="text-gray-600 text-sm">Achieved 2 perfect games!</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    if (perfectWins >= 3) {
+                        rewardHtml += `
+                            <div class="bg-white p-4 rounded-xl shadow-md flex items-center space-x-4">
+                                <span class="reward-coin">🥇</span>
+                                <div>
+                                    <h4 class="lg font-semibold text-gray-800">Gold Coin</h4>
+                                    <p class="text-gray-600 text-sm">Achieved 3 perfect games!</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    if (perfectWins >= 4) { // Or any number for Platinum
+                        rewardHtml += `
+                            <div class="bg-white p-4 rounded-xl shadow-md flex items-center space-x-4">
+                                <span class="reward-coin">💎</span>
+                                <div>
+                                    <h4 class="lg font-semibold text-gray-800">Platinum Coin</h4>
+                                    <p class="text-gray-600 text-sm">Achieved 4+ perfect games!</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    if (rewardHtml) {
+                        rewardsGridContainer.innerHTML = rewardHtml;
+                        noRewardsMessage.classList.add('hidden');
+                    } else {
+                        noRewardsMessage.classList.remove('hidden');
+                    }
+
+                } else {
+                    console.error('Failed to fetch user perfect wins:', data.message);
+                    noRewardsMessage.classList.remove('hidden');
+                    noRewardsMessage.textContent = 'Failed to load rewards.';
+                }
+            } catch (error) {
+                console.error('Error fetching user perfect wins:', error);
+                noRewardsMessage.classList.remove('hidden');
+                noRewardsMessage.textContent = 'Failed to load rewards.';
+            }
+        }
+
+        // Back to Games button click
+        backToGamesBtn.addEventListener('click', () => {
+            showGameSelectionScreen();
+        });
+
+        // Logout button click
+        logoutBtn.addEventListener('click', () => {
+            loggedInUsername = '';
+            showWindow(loginWindow);
+            displayMessage(authMessage, 'You have been logged out.', true);
+            usernameInput.value = '';
+            passwordInput.value = '';
+            isRegistering = false; // Reset to login mode
+            updateAuthFormUI();
+        });
+
+        // Initial setup on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            showWindow(loginWindow); // Start with the login window
+            updateAuthFormUI(); // Initialize auth form UI
+            generateBackgroundEmojis(); // Generate emojis on load
+        });
+
+        // --- Emoji Animation Logic ---
+        function generateBackgroundEmojis() {
+            const emojiBackground = document.getElementById('emoji-background');
+            const emojis = ['💻', '📊', '🧠', '🚀', '💡', '🧩', '📈', '✨', '🌟']; // DSA-related emojis
+            const numberOfEmojis = 30; // Adjust as needed for density
+
+            for (let i = 0; i < numberOfEmojis; i++) {
+                const emojiItem = document.createElement('span');
+                emojiItem.classList.add('emoji-item');
+                emojiItem.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+                // Randomize initial position
+                emojiItem.style.left = `${Math.random() * 100}vw`;
+                emojiItem.style.top = `${Math.random() * 100}vh`; // Start anywhere on screen initially
+
+                // Randomize font size
+                emojiItem.style.fontSize = `${Math.random() * 5.5 + 1}rem`; // 1rem to 2.5rem
+
+                // Randomize animation duration and delay
+                emojiItem.style.animationDuration = `${Math.random() * 10 + 10}s`; // 10s to 20s
+                emojiItem.style.animationDelay = `${Math.random() * -10}s`; // Start some animations mid-way
+
+                emojiBackground.appendChild(emojiItem);
+            }
+        }
+    </script>
+</body>
+</html>
